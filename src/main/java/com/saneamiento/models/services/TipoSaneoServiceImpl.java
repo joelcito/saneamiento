@@ -22,9 +22,15 @@ public class TipoSaneoServiceImpl implements ITipoSaneoService{
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public TipoSaneo findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.tipoSaneoDao.findById(id).orElse(null);
+	}
+
+	@Override
+	@Transactional
+	public TipoSaneo save(TipoSaneo tipoSaneo) {
+		return this.tipoSaneoDao.save(tipoSaneo);
 	}
 
 	

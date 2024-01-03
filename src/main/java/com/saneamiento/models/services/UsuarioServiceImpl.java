@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.saneamiento.models.dao.IUsuarioDao;
+import com.saneamiento.models.entity.Rol;
 import com.saneamiento.models.entity.Usuario;
+import com.saneamiento.models.entity.UsuarioRol;
 
 
 @Service
@@ -27,5 +29,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	public Usuario findById(Long id) {
 		return this.usuarioDao.findById(id).orElse(null);				
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public UsuarioRol getPermisosUser(Usuario usuario, Rol rol) {
+		return this.usuarioDao.getPermisosUser(usuario, rol);
+	}
+
 	
 }

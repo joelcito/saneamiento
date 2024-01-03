@@ -9,4 +9,6 @@ public interface ITipoSaneoService {
 	public List<TipoSaneo> findAll();
 	
 	public TipoSaneo findById(Long id);
+	
+	public TipoSaneo save(TipoSaneo tipoSaneo);
 }

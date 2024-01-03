@@ -22,7 +22,7 @@ public class ValidadorRestController {
 	@Autowired
 	private IValidadorService validadorService;
 		
-	@GetMapping("")
+	@GetMapping("/listado")
 	public List<Validador> index() {
 		return this.validadorService.findAll();			 
 	}
