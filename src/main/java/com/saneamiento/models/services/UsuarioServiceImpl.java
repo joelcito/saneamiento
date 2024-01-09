@@ -36,5 +36,29 @@ public class UsuarioServiceImpl implements IUsuarioService {
 		return this.usuarioDao.getPermisosUser(usuario, rol);
 	}
 
+	@Override
+	@Transactional
+	public int saveUsuarioRol(Usuario usuario, Rol rol, String menus) {
+		return this.usuarioDao.saveUsuarioRol(usuario, rol, menus);
+	}
+	
+	@Override
+	@Transactional
+	public Usuario save (Usuario usuario) {
+		return this.usuarioDao.save(usuario);
+	}
+
+	@Override
+	@Transactional
+	public List<UsuarioRol> getRolesUser(Usuario usuario) {
+		return this.usuarioDao.getRolesUser(usuario);
+	}
+
+	@Override
+	@Transactional
+	public int actualizarMenusUsuarioRol(Long usuarioRolId, String nuevosMenus) {
+		return this.usuarioDao.actualizarMenusUsuarioRol(usuarioRolId, nuevosMenus);
+	}
+
 	
 }
