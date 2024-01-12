@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.saneamiento.models.entity.DetalleTipoSaneo;
 import com.saneamiento.models.entity.Rol;
 import com.saneamiento.models.entity.Usuario;
 import com.saneamiento.models.entity.UsuarioRol;
@@ -40,6 +41,8 @@ public class RolRestController {
 	public Rol save(@RequestBody Map<String, Object> requestBody) {
 		Rol newRol = new Rol();
 		newRol.setNombre(requestBody.get("nombre").toString());
+		String datosMenus = "[{\"name\":\"Home\",\"icon\":\"home\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Home\",\"url\":\"home\",\"active\":true}]},{\"name\":\"Usuario\",\"icon\":\"person\",\"route\":\"/profile\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Usuarios\",\"url\":\"usuario\",\"active\":true},{\"name\":\"Listado Rol\",\"url\":\"rol\",\"active\":true}]},{\"name\":\"Tipo Saneo\",\"icon\":\"find_in_page\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Tipo Saneo\",\"url\":\"tipo_saneo\",\"active\":true}]}]";
+		newRol.setMenus(datosMenus);
 		return this.rolService.save(newRol);
 	}
 	
@@ -52,6 +55,7 @@ public class RolRestController {
 	
 	@PostMapping("/user_rol/{id}")
 	public Rol updateRolUser(@RequestBody Map<String, Object> requestBody, @PathVariable Long id) {
+
 		Rol rolBuscado = this.rolService.findById(id);
 		
 		List<Rol> lisRoy  = new ArrayList<>();
@@ -88,5 +92,4 @@ public class RolRestController {
 		
 		return rolBuscado ;
 	}
-
 }

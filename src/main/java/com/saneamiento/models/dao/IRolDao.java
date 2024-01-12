@@ -7,5 +7,5 @@ import com.saneamiento.models.entity.Rol;
 
 public interface IRolDao extends CrudRepository<Rol, Long> {
 	
-	
+		
 }

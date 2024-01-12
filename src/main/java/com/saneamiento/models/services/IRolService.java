@@ -2,6 +2,7 @@ package com.saneamiento.models.services;
 
 import java.util.List;
 
+
 import com.saneamiento.models.entity.Rol;
 
 public interface IRolService {
@@ -11,4 +12,5 @@ public interface IRolService {
 	public Rol findById(Long id);
 	
 	public Rol save(Rol rol);
+
 }
