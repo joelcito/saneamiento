@@ -8,16 +8,17 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.saneamiento.models.entity.DetalleTipoSaneo;
+import com.saneamiento.models.entity.DocumentoDetalleTipoSaneo;
 import com.saneamiento.models.entity.TipoSaneo;
 
 
 public interface ITipoSaneoDao extends CrudRepository<TipoSaneo, Long>{
 	
 	// ***************** DETALLE TIPO SANEO *****************
-	/*
-	@Query("SELECT dts FROM DetalleTipoSaneo dts WHERE dts.tipo_saneo_id = :detalle_tipo_saneo_id")
-	public List<DetalleTipoSaneo> getDetalleTiposaneo(@Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
-	*/
+	
+	@Query("SELECT dts FROM DetalleTipoSaneo dts WHERE dts.id = :detalle_tipo_saneo_id")
+	public DetalleTipoSaneo findByIdDetalleTipoSaneo(@Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
+	
 	
 	@Query("SELECT dts FROM DetalleTipoSaneo dts WHERE dts.tipoSaneo.id = :detalle_tipo_saneo_id")
 	public List<DetalleTipoSaneo> getDetalleTiposaneo(@Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
@@ -26,5 +27,24 @@ public interface ITipoSaneoDao extends CrudRepository<TipoSaneo, Long>{
 	@Modifying
 	@Query("INSERT INTO DetalleTipoSaneo (nombre, tipoSaneo) VALUES (:nombre, :tipoSaneo)")
 	int saveByNombreAndTipoSaneo(@Param("nombre") String nombre, @Param("tipoSaneo") TipoSaneo tipoSaneo);
-		
+	
+	
+	
+	// ***************** DOCUMENTO DETALLE TIPO SANEO *****************
+	@Query("SELECT ddts FROM DocumentoDetalleTipoSaneo ddts WHERE ddts.detalleTipoSaneo.id = :detalle_tipo_saneo_id")
+	public List<DocumentoDetalleTipoSaneo> getDocumentoDetalleTipoSaneo(@Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
+	
+	@Query("SELECT ddts FROM DocumentoDetalleTipoSaneo ddts WHERE ddts.id = :documento_detalle_tipo_saneo_id")
+	public DocumentoDetalleTipoSaneo findByIdDocumentoDetalleTipoSaneo(@Param("documento_detalle_tipo_saneo_id") Long documento_detalle_tipo_saneo_id);
+	
+	@Modifying
+	@Query("INSERT INTO DocumentoDetalleTipoSaneo (nombre, detalleTipoSaneo) VALUES (:nombre, :detalleTipoSaneo)")
+	public int saveDocumentoDetalleTipoSaneo(@Param("nombre") String nombre, @Param("detalleTipoSaneo") DetalleTipoSaneo detalleTipoSaneo);
+	
+	@Query("SELECT ts.id AS idTipoSaneo, ts.nombre AS nombreTipoSaneo, dts.id AS idDetalleTipoSaneo, dts.nombre AS nombreDetalleTipoSaneo " +
+		    "FROM TipoSaneo ts INNER JOIN DetalleTipoSaneo dts ON ts.id = dts.tipoSaneo.id WHERE dts.id = :detalleTipoSaneoId")
+	public Object[] getTipoSaneoDetalle(@Param("detalleTipoSaneoId") Long detalleTipoSaneoId);
+
+	
+
 }

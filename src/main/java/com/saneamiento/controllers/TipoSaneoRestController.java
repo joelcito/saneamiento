@@ -1,5 +1,6 @@
 package com.saneamiento.controllers;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saneamiento.models.entity.DetalleTipoSaneo;
+import com.saneamiento.models.entity.DocumentoDetalleTipoSaneo;
 import com.saneamiento.models.entity.TipoSaneo;
 import com.saneamiento.models.services.ITipoSaneoService;
 
@@ -83,6 +85,59 @@ public class TipoSaneoRestController {
 		this.tipoSaneoService.save(tipo_saneo);
 		
 	    return new DetalleTipoSaneo();
+	}
+	
+	
+	// ***************** DOCUMENTO DETALLE TIPO SANEO *****************
+	@GetMapping("/documento_detalle_tipo_saneo/{detalle_tipo_saneo_id}")
+	public List<DocumentoDetalleTipoSaneo> getDocumentoDetalleTipoSaneo(@PathVariable Long detalle_tipo_saneo_id) {
+		return this.tipoSaneoService.getDocumentoDetalleTipoSaneo(detalle_tipo_saneo_id);		
+	}
+	
+	@PostMapping("/documento_detalle_tipo_saneo/")
+	public DocumentoDetalleTipoSaneo saveDocumentoDetalleTipoSaneo(@RequestBody Map<String, Object> requestBody) {
+
+		//System.out.println(requestBody);
+		Long detalle_tipo_saneo_id 				= ((Integer) requestBody.get("detalleTipoSaneo")).longValue();
+		String nombre 							= requestBody.get("nombre").toString();
+
+		Object[] result = this.tipoSaneoService.getTipoSaneoDetalle(detalle_tipo_saneo_id);
+
+		// Accede a los elementos del array
+	    Object[] fila = (Object[]) result[0];
+
+		Boolean sw = true;
+
+	    // Supongamos que estás buscando el primer y segundo elemento de la fila
+	    Long id_tipo_saneo 					= ((Long) fila[0]).longValue();
+	    //String nombre_tipo_saneo 			= fila[1].toString();
+	    Long id_detalle_tipo_saneo 			= ((Long)fila[2]).longValue();
+	    //String nombre_detalle_tipo_saneo 	= fila[3].toString();
+
+		TipoSaneo tipo_saneo 					= this.tipoSaneoService.findById(id_tipo_saneo);
+		List<DetalleTipoSaneo> lisDetaTipoSane 	= tipo_saneo.getDetalles();
+
+		Iterator<DetalleTipoSaneo> iterator = lisDetaTipoSane.iterator();
+		while (iterator.hasNext() && sw) {
+			DetalleTipoSaneo dar = iterator.next();
+			if (dar.getId() == id_detalle_tipo_saneo) {
+				List<DocumentoDetalleTipoSaneo> listDoc = dar.getDocumentosDetalles();
+
+				DocumentoDetalleTipoSaneo newDocumento = new DocumentoDetalleTipoSaneo();
+				newDocumento.setNombre(nombre);
+				newDocumento.setDetalleTipoSaneo(dar);
+
+				listDoc.add(newDocumento);
+
+				dar.setDocumentosDetalles(listDoc);
+				iterator.remove(); // Remover el elemento actual de la lista para evitar ConcurrentModificationException
+				sw = false;
+			}
+		}
+		
+		this.tipoSaneoService.save(tipo_saneo);
+		
+		return new DocumentoDetalleTipoSaneo();
 	}
 	
 }
