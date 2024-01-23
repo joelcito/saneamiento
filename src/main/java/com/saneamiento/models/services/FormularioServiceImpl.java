@@ -5,14 +5,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.saneamiento.models.dao.IFormulario;
+import com.saneamiento.models.dao.IFormularioDao;
 import com.saneamiento.models.entity.Formulario;
+import com.saneamiento.models.entity.FormularioPregunta;
 
 @Service
 public class FormularioServiceImpl implements IFormularioService {
 	
 	@Autowired
-	private IFormulario formularioDao;
+	private IFormularioDao formularioDao;
 
 	@Override
 	public List<Formulario> findAll() {
@@ -27,6 +28,13 @@ public class FormularioServiceImpl implements IFormularioService {
 	@Override
 	public Formulario findById(Long id) {
 		return this.formularioDao.findById(id).orElse(null);
+	}
+
+	
+	//***************** PREGUNTA FORMULARIO *****************
+	@Override
+	public List<FormularioPregunta> getFormularioPregunta(Long formulario_id) {
+		return this.formularioDao.getFormularioPregunta(formulario_id);
 	}
 
 }

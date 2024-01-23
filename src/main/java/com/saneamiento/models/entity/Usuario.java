@@ -1,6 +1,6 @@
 package com.saneamiento.models.entity;
 
-import java.io.Serializable;
+//import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,6 +47,14 @@ public class Usuario implements UserDetails {
 	private String country;
 
 	private Boolean estado;
+	
+	private String nombres;
+	
+	private String primer_apellido;
+	
+	private String segundo_apellido;
+	
+	private String cedula;
 
 	/*
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
