@@ -30,6 +30,11 @@ public class TipoSaneo implements Serializable{
 	@OneToMany(mappedBy = "tipoSaneo", cascade = CascadeType.ALL)
 	@JsonIgnore
     private List<DetalleTipoSaneo> detalles;
+		
+	@OneToMany(mappedBy = "tipoSaneoFormulario", cascade = CascadeType.ALL)
+	@JsonIgnore
+    private List<Formulario> formularios;
+    
 
 	/**
 	 * 

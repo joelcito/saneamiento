@@ -26,6 +26,8 @@ public class FormularioPregunta implements Serializable {
 	
 	private Boolean requerido;
 	
+	private String order_data;
+	
 	@ManyToOne
 	@JoinColumn(name = "formulario_id")
 	private Formulario formulario;

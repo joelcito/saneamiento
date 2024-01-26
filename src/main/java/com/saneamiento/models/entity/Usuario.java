@@ -55,7 +55,17 @@ public class Usuario implements UserDetails {
 	private String segundo_apellido;
 	
 	private String cedula;
-
+	
+	private String complemento;
+	
+	private String departamento;
+	
+	private String nombre_organizacion;
+	
+	private String nombre_dependencia;
+	
+	private String nombre_cargo;
+	
 	/*
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name="usuario_id"), inverseJoinColumns =@JoinColumn(name="rol_id"))

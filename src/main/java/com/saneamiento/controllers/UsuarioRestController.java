@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -126,7 +125,7 @@ public class UsuarioRestController {
 	      	        	    	
 	            
 	            String name = node.get("name").asText();
-                boolean isActive = node.get("active").asBoolean();
+               // boolean isActive = node.get("active").asBoolean();
                 //System.out.println("Name: " + name + ", Active: " + isActive);
                 
                 //Object valorSubMenu = buscarValor(listaPadre,name);
@@ -145,7 +144,7 @@ public class UsuarioRestController {
 	                for (JsonNode subMenu : subMenus) {
 	                	
 	                	String subMenuName = subMenu.get("name").asText();
-                        boolean subMenuIsActive = subMenu.get("active").asBoolean();
+                        //boolean subMenuIsActive = subMenu.get("active").asBoolean();
                         //System.out.println("\tSubMenu Name: " + subMenuName + ", Active: " + subMenuIsActive);
                         
                         String nameEditadoHijo = subMenuName.trim().replaceAll("\\s+", "");

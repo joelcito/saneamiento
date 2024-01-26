@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.saneamiento.models.entity.DetalleTipoSaneo;
 import com.saneamiento.models.entity.Rol;
 import com.saneamiento.models.entity.Usuario;
 import com.saneamiento.models.entity.UsuarioRol;
@@ -71,7 +70,7 @@ public class RolRestController {
 			Rol rolBuscadoo 			= this.rolService.findById(rol_id);
 			
 			Boolean vav 				= (Boolean) valor; 
-			UsuarioRol userRolBuscado 	= this.usuarioService.getPermisosUser(usuarioBuscado, rolBuscadoo);
+			//UsuarioRol userRolBuscado 	= this.usuarioService.getPermisosUser(usuarioBuscado, rolBuscadoo);
 			
 			if(vav) {
 				lisRoy.add(rolBuscadoo);

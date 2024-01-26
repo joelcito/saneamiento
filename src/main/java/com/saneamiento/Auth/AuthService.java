@@ -3,9 +3,9 @@ package com.saneamiento.Auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
+
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -58,12 +58,29 @@ public class AuthService {
 	}
 
 	public AuthResponse register(RegisterRequest request) {
+		
+		
+		System.out.println(request);
+		
 		Usuario user = Usuario.builder()
 								.username(request.getUsername())
 								.password(passwordEncoder.encode(request.getPassword())) 
 								.country(request.getCountry())
 								.estado(request.getEstado())
+								
+								.cedula(request.getCedula())
+								.complemento(request.getComplemento())
+								.nombres(request.getNombres())
+								.primer_apellido(request.getPrimer_apellido())
+								.segundo_apellido(request.getSegundo_apellido())
+								.nombre_organizacion(request.getNombre_organizacion())
+								.nombre_dependencia(request.getNombre_dependencia())
+								.nombre_cargo(request.getNombre_cargo())
+								.departamento(request.getDepartamento())							
 								.build();
+		
+		//System.out.println(sout);		
+		
 		usuarioDao.save(user);
 		
 		return AuthResponse.builder()

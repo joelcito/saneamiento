@@ -39,6 +39,11 @@ public class FormularioRestController {
 		
 	}
 	
+	@GetMapping("/listadoFormulariosByIdTipoSaneo/{tipoSaneoId}")
+	public List<Formulario> getFormulariosByIdTipoSaneo(@PathVariable Long tipoSaneoId) {
+		return this.formularioService.getFormulariosByIdTipoSaneo(tipoSaneoId);
+	}
+	
 	//***************** PREGUNTA FORMULARIO *****************
 	@GetMapping("/formulario_pregunta/{formulario_id}")
 	public List<FormularioPregunta> getFormularioPregunta(@PathVariable Long formulario_id) {
@@ -86,6 +91,13 @@ public class FormularioRestController {
 		System.out.println(formulario_id);
 			
 		return new FormularioPregunta();
+	}
+	
+	@GetMapping("/formulario_pregunta/{formulario_id}/{order_data}")
+	public List<FormularioPregunta> getFormularioPreguntaByTipoSaneoByTipoDato(@PathVariable Long formulario_id, @PathVariable String order_data){
+		System.out.println(formulario_id);
+		System.out.println(order_data);
+		return this.formularioService.getFormularioPreguntaByTipoSaneoByTipoDato(formulario_id, order_data);
 	}
 
 }
