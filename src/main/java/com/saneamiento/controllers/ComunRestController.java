@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.saneamiento.models.services.ComunService;
+import com.saneamiento.models.services.ComunServiceImpl;
 
 
 @RestController
 @RequestMapping("/api/comun")
 @CrossOrigin(origins = {"http://localhost:4200"})
-public class ComunController {
+public class ComunRestController {
 	
 	@Autowired
-	private ComunService comunService;
+	private ComunServiceImpl comunService;
 	
 	@PostMapping("/datos")
 	public Map<String, Object> getAllDataFromComunDatabase(@RequestBody Map<String, Object> requestBody) {

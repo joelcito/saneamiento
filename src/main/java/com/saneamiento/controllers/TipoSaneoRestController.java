@@ -69,20 +69,22 @@ public class TipoSaneoRestController {
 		
 	@PostMapping("/detalle_tipo_saneo/")
 	public DetalleTipoSaneo saveDetalleTipoSaneo(@RequestBody Map<String, Object> requestBody) {
+		
+		//System.out.println(requestBody);		
 
 		Long tipo_saneo_id 						= ((Integer) requestBody.get("tipoSaneo")).longValue();
 		TipoSaneo tipo_saneo 					= this.tipoSaneoService.findById(tipo_saneo_id);		
 		List<DetalleTipoSaneo> lisDetaTipoSane 	= tipo_saneo.getDetalles();
-		
+				
 		String nombre 				= requestBody.get("nombre").toString();
 		DetalleTipoSaneo newDeta 	= new DetalleTipoSaneo();
+			
 		newDeta.setNombre(nombre);
-		newDeta.setTipoSaneo(tipo_saneo);
-		
+		newDeta.setTipoSaneo(tipo_saneo);		
 		lisDetaTipoSane.add(newDeta);		
 		tipo_saneo.setDetalles(lisDetaTipoSane);
 		
-		this.tipoSaneoService.save(tipo_saneo);
+		this.tipoSaneoService.save(tipo_saneo);		
 		
 	    return new DetalleTipoSaneo();
 	}

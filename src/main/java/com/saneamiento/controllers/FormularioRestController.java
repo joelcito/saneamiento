@@ -44,6 +44,13 @@ public class FormularioRestController {
 		return this.formularioService.getFormulariosByIdTipoSaneo(tipoSaneoId);
 	}
 	
+	@GetMapping("/getFormulariofindById/{id}")
+	public Formulario getFormulariofindById(@PathVariable Long id) {
+		return this.formularioService.findById(id);
+	}
+	
+	
+	
 	//***************** PREGUNTA FORMULARIO *****************
 	@GetMapping("/formulario_pregunta/{formulario_id}")
 	public List<FormularioPregunta> getFormularioPregunta(@PathVariable Long formulario_id) {

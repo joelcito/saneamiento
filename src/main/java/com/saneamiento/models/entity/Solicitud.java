@@ -37,6 +37,10 @@ public class Solicitud implements Serializable {
 	@JoinColumn(name = "respuesta_id")
 	private Usuario UsuarioRespuesta;
 	
+	private String tabla_id;
+	
+	private String sistema;
+	
 	@Column(name = "fecha_solicitud", columnDefinition = "TIMESTAMP")
     private LocalDateTime fechaSolicitud;
 	

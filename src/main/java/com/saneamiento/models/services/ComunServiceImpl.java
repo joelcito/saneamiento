@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ComunService {
+public class ComunServiceImpl {
 	
 	 private final JdbcTemplate jdbcTemplate;
 
-	    public ComunService(@Qualifier("postGreeComunDataSource") DataSource dataSource) {
+	    public ComunServiceImpl(@Qualifier("postGreeComunDataSource") DataSource dataSource) {
 	        this.jdbcTemplate = new JdbcTemplate(dataSource);
 	    }
 

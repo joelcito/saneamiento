@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,7 +28,7 @@ public class TipoSaneo implements Serializable{
 	
 	private String descripcion;
 
-	@OneToMany(mappedBy = "tipoSaneo", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "tipoSaneo", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JsonIgnore
     private List<DetalleTipoSaneo> detalles;
 		
