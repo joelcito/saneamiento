@@ -1,5 +1,14 @@
 package com.saneamiento.controllers;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,8 +20,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.saneamiento.models.entity.Extranjeria;
+import com.saneamiento.models.entity.Formulario;
+import com.saneamiento.models.entity.Regla;
 import com.saneamiento.models.entity.Solicitud;
+import com.saneamiento.models.entity.Tramite;
+import com.saneamiento.models.entity.Usuario;
+import com.saneamiento.models.services.IFormularioService;
 import com.saneamiento.models.services.ISolicitudService;
+import com.saneamiento.models.services.IUsuarioService;
+
+
 
 @RestController
 @RequestMapping("/api/solicitud")
@@ -22,19 +40,256 @@ public class SolicitudRestController {
 	@Autowired
 	private ISolicitudService solicitudService;
 	
-	@GetMapping("/listado")
-	public List<Solicitud> listado(){
-		return this.solicitudService.findAll();
+	@Autowired
+	private IFormularioService formularioService;
+	
+	@Autowired
+	private IUsuarioService usuarioService;
+	
+	//@GetMapping("/listado")
+	@PostMapping("/listado")
+	public List<Solicitud> listado(@RequestBody Map<String, Object> requestBody){
+		
+		System.out.println(requestBody);
+		
+		Long user_id = Long.parseLong(requestBody.get("id").toString());
+		
+		
+		//List<Solicitud> solicitudes = this.solicitudService.findAll();
+		
+		List<Solicitud> solicitudes = this.solicitudService.listadoSolicitudes(user_id);
+
+	    // Sort the list in descending order based on a specific field
+	    Collections.sort(solicitudes, Comparator.comparing(Solicitud::getId).reversed());
+
+	    return solicitudes;
+		//return this.solicitudService.findAll();
 	}
 	
 	@PostMapping("/")
 	public Solicitud save(@RequestBody Map<String, Object> requestbody) {
 		//System.out.println(requestbody);
+		String serialExtRegistros =  requestbody.get("serialExtRegistros").toString();
+		Extranjeria ex =  this.solicitudService.buscaSerialExtranjero(serialExtRegistros);		
+				
+		if(ex == null) {			
+			String serialDocumentoExtRegistros =  requestbody.get("serialDocumentoExtRegistros").toString();
+			String nroCedulaBolExtRegistros =  requestbody.get("nroCedulaBolExtRegistros").toString();
+			this.solicitudService.saveExtranjeria(serialExtRegistros, serialDocumentoExtRegistros, nroCedulaBolExtRegistros);
+			ex =  this.solicitudService.buscaSerialExtranjero(serialExtRegistros);
+		}
 		
-		Map<String, Object> datosFormularioSolicitud = (Map<String, Object>) requestbody.get("datosFormularioSolicitud");
+		Long formulario_id = Long.parseLong(requestbody.get("formulario_id").toString());
+		Formulario formBuscado 	= this.formularioService.findById(formulario_id);
 		
-		System.out.println(datosFormularioSolicitud);
+		Long solicitante_id = Long.parseLong(requestbody.get("funcionario_id").toString());
+		Usuario usuarioSolicitante  =  this.usuarioService.findById(solicitante_id);
 		
+		Long tipo_solicitud_id = Long.parseLong(requestbody.get("tipo_solicitud").toString());			
+		
+		//**************** PARA EL SOLICITUD ****************
+		Solicitud newsolicitud =  new Solicitud();
+		newsolicitud.setFormulario(formBuscado);
+		newsolicitud.setUsuarioSolicitante(usuarioSolicitante);
+		// Convert Date to LocalDateTime
+		Instant instant = new Date().toInstant();
+		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+		newsolicitud.setFechaSolicitud(localDateTime);
+		newsolicitud.setTabla_id(ex.getId().toString());
+		newsolicitud.setSistema("extranjeria");
+		
+		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION ********************************
+		// Obtener la fecha y la hora por separado
+		
+        //LocalDate fecha = localDateTime.toLocalDate();
+        //LocalTime hora = localDateTime.toLocalTime();
+		
+		
+        LocalDate fecha = LocalDate.of(2024, 2, 5);
+        //LocalTime hora = LocalTime.of(19, 0);
+        LocalTime hora = LocalTime.of(20, 0,1);
+        //LocalTime hora = LocalTime.of(23, 59,59);
+
+        
+        //System.out.println(horaEspecifica);
+        
+        Boolean swIerable = true;
+        
+        List<Map<String, Object>> listaReglas = this.solicitudService.getReglasVigentes(hora.toString(), fecha, fecha);
+        
+        System.out.println(listaReglas.size());
+        
+        if(listaReglas.size() > 1) {       	
+        	
+        	newsolicitud = asignarUsuarioSegunReglas(listaReglas, swIerable, newsolicitud);
+        	
+        	/*
+        	Iterator<Map<String, Object>> iterator = listaReglas.iterator();
+        	while (iterator.hasNext() && swIerable) {
+        		Map<String, Object> r = iterator.next();
+        		if(r.get("asignacion").toString().equals("0")) {
+        			Long usuario_regla_id = Long.parseLong(r.get("usuario_id").toString());
+        			Usuario usuAsiganado = this.usuarioService.findById(usuario_regla_id);
+        			newsolicitud.setUsuarioAsignado(usuAsiganado);
+        			swIerable =  false;
+        			Long regla_id = Long.parseLong(r.get("id").toString());
+        			this.solicitudService.updateReglaAsignacion("1", regla_id);
+        			//System.out.println("rols => "+regla_id);
+        		}else {
+        			
+        		}
+        	    //System.out.println(r.get("id") + " " + r.get("usuario_id"));
+        	}
+        	//System.out.println(swIerable);
+        	if(swIerable) {
+        		Map<String, Object> primeroLista = listaReglas.get(0);
+        		Long usuario_regla_id = Long.parseLong(primeroLista.get("usuario_id").toString());
+    			Usuario usuAsiganado = this.usuarioService.findById(usuario_regla_id);
+    			newsolicitud.setUsuarioAsignado(usuAsiganado);    			
+    			//swIerable =  false;
+    			Long regla_id = Long.parseLong(primeroLista.get("id").toString());    			
+    			for (Map<String, Object> r : listaReglas) {
+    				if(!(r.get("id").equals(primeroLista.get("id").toString()))) {
+    					Long aCerear = Long.parseLong(r.get("id").toString());
+    					this.solicitudService.updateReglaAsignacion("0", aCerear);	
+    					//System.out.println("se cero => "+regla_id);
+    				}   				
+    	        	//System.out.println(r.get("id")+" "+r.get("usuario_id"));
+    			}        		
+        	}else {
+        		
+        	}
+        	*/
+        }else {
+        	
+        	// Definir el rango de la tarde
+            LocalTime limiteInicioTarde 	= LocalTime.of(12, 0, 0);
+            LocalTime limiteFinTarde 		= LocalTime.of(23, 59, 59);
+            
+            
+        	
+            //if (hora.isAfter(limiteInicioTarde) && hora.isBefore(limiteFinTarde)) {
+        	if ( (hora.isAfter(limiteInicioTarde) && hora.isBefore(limiteFinTarde)) ||  (hora.equals(limiteInicioTarde) || hora.equals(limiteFinTarde))) {
+                //System.out.println("La hora es por la tarde. "+ hora);
+                // Avanzar al día siguiente
+                LocalDate fechaSiguiente = fecha.plusDays(1);
+                hora 		= LocalTime.of(7, 31, 59);
+                //System.out.println("Fecha actual: " + fecha);
+            	//System.out.println("Fecha siguiente: " + fechaSiguiente);        		
+        		listaReglas = this.solicitudService.getReglasVigentes(hora.toString(), fechaSiguiente, fechaSiguiente);        		
+        		newsolicitud = asignarUsuarioSegunReglas(listaReglas, swIerable, newsolicitud);                
+        	}else {   
+        		hora 		= LocalTime.of(7, 31, 59);
+        		listaReglas = this.solicitudService.getReglasVigentes(hora.toString(), fecha, fecha);        		
+        		newsolicitud = asignarUsuarioSegunReglas(listaReglas, swIerable, newsolicitud);        		
+        		/*
+        		Iterator<Map<String, Object>> iterator = listaReglas.iterator();
+            	while (iterator.hasNext() && swIerable) {
+            		Map<String, Object> r = iterator.next();
+            		if(r.get("asignacion").toString().equals("0")) {
+            			Long usuario_regla_id = Long.parseLong(r.get("usuario_id").toString());
+            			Usuario usuAsiganado = this.usuarioService.findById(usuario_regla_id);
+            			newsolicitud.setUsuarioAsignado(usuAsiganado);
+            			swIerable =  false;
+            			Long regla_id = Long.parseLong(r.get("id").toString());
+            			this.solicitudService.updateReglaAsignacion("1", regla_id);
+            		}else {
+            			
+            		}
+            	}
+            	if(swIerable) {
+            		Map<String, Object> primeroLista = listaReglas.get(0);
+            		Long usuario_regla_id = Long.parseLong(primeroLista.get("usuario_id").toString());
+        			Usuario usuAsiganado = this.usuarioService.findById(usuario_regla_id);
+        			newsolicitud.setUsuarioAsignado(usuAsiganado);
+        			Long regla_id = Long.parseLong(primeroLista.get("id").toString());    			
+        			for (Map<String, Object> r : listaReglas) {
+        				if(!(r.get("id").equals(primeroLista.get("id").toString()))) {
+        					Long aCerear = Long.parseLong(r.get("id").toString());
+        					this.solicitudService.updateReglaAsignacion("0", aCerear);
+        				}       	        
+        			}
+            	}else {
+            		
+            	}  
+            	*/      		
+                //System.out.println("La hora no es por la tarde. "+hora);                
+        	}        	      	        	
+        }
+        // ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION ********************************
+		
+		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
+		Long newSolicitudId = savedSolicitud.getId();
+		
+		//**************** PARA EL TRAMITE ****************
+		this.solicitudService.saveTramite(tipo_solicitud_id, newSolicitudId);
+		Tramite tramiteBuscado = this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
+		//System.out.println("*****************************");
+		//System.out.println(tramiteBuscado);
+		//System.out.println(tipo_solicitud_id);
+		//System.out.println(newSolicitudId);
+		//System.out.println("*****************************");
+		Long tramite_id = tramiteBuscado.getId();
+		
+		
+		//**************** PARA EL TRAMITE DETALLE****************
+		requestbody.forEach((key, valor) -> {
+			// Verificar si el key contiene la palabra "respuesta"
+		    if (key.toLowerCase().contains("_respuesta")) {
+		        //System.out.println("La clave contiene la palabra 'respuesta'");
+		    	this.solicitudService.saveTramiteDetalle(tramite_id, key.toString(), valor.toString());
+		    	//System.out.println("key: "+key +" | valor: "+valor);
+		    }
+		});
+		       
+        
+        /*
+		System.out.println(localDateTime);
+		System.out.println(fecha);
+		System.out.println(hora);
+		*/				
+				
 		return new Solicitud();
 	}
+	
+	// Función privada para asignar usuario según reglas
+    private Solicitud asignarUsuarioSegunReglas(List<Map<String, Object>> listaReglas , Boolean swIerable, Solicitud newsolicitud) {
+    	
+    	Iterator<Map<String, Object>> iterator = listaReglas.iterator();
+    	while (iterator.hasNext() && swIerable) {
+    		Map<String, Object> r = iterator.next();
+    		if(r.get("asignacion").toString().equals("0")) {
+    			Long usuario_regla_id = Long.parseLong(r.get("usuario_id").toString());
+    			Usuario usuAsiganado = this.usuarioService.findById(usuario_regla_id);
+    			newsolicitud.setUsuarioAsignado(usuAsiganado);
+    			swIerable =  false;
+    			Long regla_id = Long.parseLong(r.get("id").toString());
+    			this.solicitudService.updateReglaAsignacion("1", regla_id);
+    			//System.out.println("rols => "+regla_id);
+    		}else {
+    			
+    		}
+    	    //System.out.println(r.get("id") + " " + r.get("usuario_id"));
+    	}
+    	//System.out.println(swIerable);
+    	if(swIerable) {
+    		Map<String, Object> primeroLista = listaReglas.get(0);
+    		Long usuario_regla_id = Long.parseLong(primeroLista.get("usuario_id").toString());
+			Usuario usuAsiganado = this.usuarioService.findById(usuario_regla_id);
+			newsolicitud.setUsuarioAsignado(usuAsiganado);    			
+			//swIerable =  false;
+			Long regla_id = Long.parseLong(primeroLista.get("id").toString());    			
+			for (Map<String, Object> r : listaReglas) {
+				if(!(r.get("id").equals(primeroLista.get("id").toString()))) {
+					Long aCerear = Long.parseLong(r.get("id").toString());
+					this.solicitudService.updateReglaAsignacion("0", aCerear);	
+					//System.out.println("se cero => "+regla_id);
+				}   				
+	        	//System.out.println(r.get("id")+" "+r.get("usuario_id"));
+			}        		
+    	}else {
+       	}
+    	return newsolicitud;
+    }
 }

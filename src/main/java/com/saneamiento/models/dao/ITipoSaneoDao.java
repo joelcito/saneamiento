@@ -1,5 +1,6 @@
 package com.saneamiento.models.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Modifying;
@@ -9,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.saneamiento.models.entity.DetalleTipoSaneo;
 import com.saneamiento.models.entity.DocumentoDetalleTipoSaneo;
+import com.saneamiento.models.entity.Regla;
 import com.saneamiento.models.entity.TipoSaneo;
 
 
@@ -44,7 +46,5 @@ public interface ITipoSaneoDao extends CrudRepository<TipoSaneo, Long>{
 	@Query("SELECT ts.id AS idTipoSaneo, ts.nombre AS nombreTipoSaneo, dts.id AS idDetalleTipoSaneo, dts.nombre AS nombreDetalleTipoSaneo " +
 		    "FROM TipoSaneo ts INNER JOIN DetalleTipoSaneo dts ON ts.id = dts.tipoSaneo.id WHERE dts.id = :detalleTipoSaneoId")
 	public Object[] getTipoSaneoDetalle(@Param("detalleTipoSaneoId") Long detalleTipoSaneoId);
-
-	
 
 }

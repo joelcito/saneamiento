@@ -37,6 +37,10 @@ public class Solicitud implements Serializable {
 	@JoinColumn(name = "respuesta_id")
 	private Usuario UsuarioRespuesta;
 	
+	@ManyToOne
+	@JoinColumn(name = "formulario_id")
+	private Formulario Formulario;
+	
 	private String tabla_id;
 	
 	private String sistema;
