@@ -3,17 +3,15 @@ package com.saneamiento.models.services;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.data.repository.query.Param;
-
 import com.saneamiento.models.entity.Extranjeria;
-import com.saneamiento.models.entity.Regla;
 import com.saneamiento.models.entity.Solicitud;
 import com.saneamiento.models.entity.Tramite;
 
 public interface ISolicitudService {
 	
-	public List<Solicitud> listadoSolicitudes(Long usuario_asignado_id);
+	public List<Solicitud> listadoSolicitudesAsignados(Long usuario_asignado_id);
+	
+	public List<Solicitud> listadoSolicitudes(Long usuario_solicitante_id);	
 	
 	public List<Solicitud> findAll();
 	

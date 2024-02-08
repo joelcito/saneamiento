@@ -1,12 +1,9 @@
 package com.saneamiento.controllers;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +30,13 @@ public class ExtranjeriaRestController {
 	public List<Map<String, Object>> buscaExtranjero(@RequestBody Map<String, Object> requestBody) {
 		return this.extranjeriaSerice.buscaExtranjero(requestBody);
 	}
+	
+	@PostMapping("/buscaExtranjeroPorSerial")
+	public Map<String, Object> buscarporSerialExtranjero(@RequestBody Map<String, Object> requestBody) {
+		return this.extranjeriaSerice.buscarporSerialExtranjero(requestBody);
+	}
+	
+	
 	
 	/*
 	@PostMapping("/getImagenExtranjero")

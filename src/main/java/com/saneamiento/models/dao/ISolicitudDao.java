@@ -1,7 +1,6 @@
 package com.saneamiento.models.dao;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.saneamiento.models.entity.Extranjeria;
-import com.saneamiento.models.entity.Regla;
 import com.saneamiento.models.entity.Solicitud;
 import com.saneamiento.models.entity.Tramite;
 
@@ -19,7 +17,10 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
 	//**************** SOLICITUD ****************
 	@Query("SELECT so FROM Solicitud so WHERE so.UsuarioAsignado.id =:usuario_asignado_id ")
-	public List<Solicitud> listadoSolicitudes(@Param("usuario_asignado_id") Long usuario_asignado_id);
+	public List<Solicitud> listadoSolicitudesAsignados(@Param("usuario_asignado_id") Long usuario_asignado_id);
+
+	@Query("SELECT so FROM Solicitud so WHERE so.UsuarioSolicitante.id =:usuario_solicitante_id ")
+	public List<Solicitud> listadoSolicitudes(@Param("usuario_solicitante_id") Long usuario_solicitante_id);
 	
 	//**************** TABLA EXTRANJENRIA ****************
 	@Query("SELECT ex FROM Extranjeria ex WHERE ex.serialExtRegistros =:serialExtRegistros")
@@ -29,7 +30,6 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	@Query("INSERT INTO Extranjeria (serialExtRegistros, serialDocumentoExtRegistros, nroCedulaBolExtRegistros) VALUES (:serialExtRegistros, :serialDocumentoExtRegistros, :nroCedulaBolExtRegistros)")	
 	public int saveExtranjeria(@Param("serialExtRegistros") String serialExtRegistros, @Param("serialDocumentoExtRegistros") String serialDocumentoExtRegistros, @Param("nroCedulaBolExtRegistros") String nroCedulaBolExtRegistros);
 	
-	
 	//**************** TABLA TRAMITE ****************
 	@Modifying
 	@Query(value = "INSERT INTO tramite (detalle_tipo_saneo_id, solicitud_id) VALUES (:detalle_tipo_saneo_id, :solicitud_id)", nativeQuery = true)
@@ -37,8 +37,7 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
 	@Query("SELECT tr FROM Tramite tr WHERE tr.solicitud.id = :solicitud_id AND tr.detalleTipoSaneo.id = :detalle_tipo_saneo_id")
 	public Tramite buscaByTipoSolicitudBySolicitudId(@Param("solicitud_id") Long solicitud_id, @Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
-	
-	
+		
 	//**************** TABLA TRAMITE DETALLE ****************
 	@Modifying
 	@Query(value = "INSERT INTO tramite_detalle (tramite_id, pregunta, respuesta) VALUES (:tramite_id, :pregunta, :respuesta)", nativeQuery = true)
@@ -54,8 +53,7 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
             "  )" +
             ") AND r.fecha_ini BETWEEN :startDate AND :endDate AND r.estado = TRUE " +
             "ORDER BY r.asignacion ASC", nativeQuery = true)
-	public List<Map<String, Object>> getReglasVigentes(@Param("horaParam") String horaParam,@Param("startDate") LocalDate startDate,@Param("endDate") LocalDate endDate);
-	
+	public List<Map<String, Object>> getReglasVigentes(@Param("horaParam") String horaParam,@Param("startDate") LocalDate startDate,@Param("endDate") LocalDate endDate);	
 
 	@Modifying
     @Query("UPDATE Regla r SET r.asignacion = :asignacion WHERE r.id = :id")

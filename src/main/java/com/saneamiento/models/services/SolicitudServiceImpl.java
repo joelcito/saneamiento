@@ -21,8 +21,15 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<Solicitud> listadoSolicitudes(Long usuario_asignado_id) {
-		return this.solicitudDao.listadoSolicitudes(usuario_asignado_id);
+	public List<Solicitud> listadoSolicitudesAsignados(Long usuario_asignado_id) {
+		return this.solicitudDao.listadoSolicitudesAsignados(usuario_asignado_id);
+	}
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Solicitud> listadoSolicitudes(Long usuario_solicitante_id) {
+		return this.solicitudDao.listadoSolicitudes(usuario_solicitante_id);
 	}
 
 	@Override
@@ -91,7 +98,4 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	public int updateReglaAsignacion(String asignacion, Long id) {
 		return this.solicitudDao.updateReglaAsignacion(asignacion, id);
 	}
-
-	
-
 }

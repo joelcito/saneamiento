@@ -71,6 +71,14 @@ public class ExtranjeriaServiceImpl {
  	
 	}
     
+    @Transactional(readOnly = true)
+    public Map<String, Object> buscarporSerialExtranjero(Map<String, Object> datos){
+    	
+    	StringBuilder sql = new StringBuilder("SELECT * FROM ExtRegistros er WHERE 1=1");
+    	sql.append(" AND er.SerialExtRegistros = '").append(datos.get("serial")).append("'");
+    	
+    	return jdbcTemplate.queryForMap(sql.toString());
+    }
     
     
     /*

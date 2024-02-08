@@ -4,9 +4,12 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +34,15 @@ public class DetalleTipoSaneo implements Serializable {
 	
 	@OneToMany(mappedBy = "detalleTipoSaneo", cascade = CascadeType.ALL)
 	@JsonIgnore
-    private List<DocumentoDetalleTipoSaneo> documentosDetalles;
+	private List<DocumentoDetalleTipoSaneo> documentosDetalles;
+	
+//	@OneToMany(mappedBy = "detalleTipoSaneo", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "detalleTipoSaneo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	//@JsonManagedReference
+	//@JsonIgnore
+	@JsonManagedReference
+    private List<TipoDetalleTipoSaneo> tipoDetalleTipoSaneo;
+    
 	
 	private String nombre;
 	
