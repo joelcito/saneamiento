@@ -67,6 +67,15 @@ public class SolicitudRestController {
 		//return this.solicitudService.findAll();
 	}
 	
+	//**************** PARA EL LISTADO DE TRAMITES SEGUN SOLICITUDES ****************
+	
+	@GetMapping("/tramitesSolicitudesByIdSolicitud/{solicitud_id}")
+	public List<Map<String, Object>> tramitesSolicitudesByIdSolicitud(@PathVariable Long solicitud_id){
+		return this.solicitudService.tramitesSolicitudesByIdSolicitud(solicitud_id);		
+	}
+	
+	//**************** END PARA EL LISTADO DE TRAMITES SEGUN SOLICITUDES ****************
+	
 	//**************** PARA EL LISTADO DE ASIGNACIONES ****************
 	@PostMapping("/asignacion/listado")
 	public List<Solicitud> listadoAsignaciones(@RequestBody Map<String, Object> requestBody) {
@@ -87,9 +96,13 @@ public class SolicitudRestController {
 	}
 	
 	@GetMapping("/{id}")
-	public Solicitud findByIdsolicitud(@PathVariable Long id) {
-		System.out.println(id);
-		return this.solicitudService.findById(id);
+	//public Solicitud findByIdsolicitud(@PathVariable Long id) {
+	public Map<String, Object> findByIdsolicitud(@PathVariable Long id) {
+		
+		return this.solicitudService.solicitudesPorIdExtranjero(id);
+		
+		//System.out.println(id);
+		//return this.solicitudService.findById(id);
 	}
 	
 	@PostMapping("/")
@@ -291,6 +304,8 @@ public class SolicitudRestController {
 	@PostMapping("/saveSolicitudDesbloqueoDirectiva0082019")
 	public Solicitud saveSolicitudDesbloqueoDirectiva0082019(@RequestBody Map<String, Object> requestbody) {
 		
+		System.out.println(requestbody);
+		
 		String serialExtRegistros =  requestbody.get("serialExtRegistros").toString();
 		Extranjeria ex =  this.solicitudService.buscaSerialExtranjero(serialExtRegistros);	
 		
@@ -334,16 +349,39 @@ public class SolicitudRestController {
 		    	this.solicitudService.saveTramiteDetalle(tramite_id, key.toString(), valor.toString());
 		    	//System.out.println("key: "+key +" | valor: "+valor);
 		    }
-		});
-		
-        
-        
+		});	
 				
-		
-		
-		System.out.println(requestbody);
-		
 		return savedSolicitud;
+	}
+	
+	@PostMapping("/sanearDirectiva0082019")
+	public Solicitud sanearDirectiva0082019(@RequestBody Map<String, Object> requestBody) {
+		
+		System.out.println(requestBody);
+		
+		Long solicitud_id = Long.parseLong(requestBody.get("solicitud").toString());
+		
+		Solicitud soliBuscado = this.solicitudService.findById(solicitud_id);
+		
+		soliBuscado.setEstado("PROCESADO");
+		
+		Instant instant = new Date().toInstant();
+		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+		soliBuscado.setFechaRespuesta(localDateTime);
+		
+		this.solicitudService.save(soliBuscado);
+		
+		return soliBuscado;
+	}
+	
+	@PostMapping("/verificaSiTieneTramatiesEnviados")
+	public List<Map<String, Object>> verificaSiTieneTramatiesEnviados(@RequestBody Map<String, Object> requestBody) {
+		
+		String serial = requestBody.get("serial").toString();
+		Long detalle_tipo_saneo_id = Long.parseLong(requestBody.get("detalle_tipo_saneo_id").toString());
+		
+		return this.solicitudService.verificaSiTieneTramatiesEnviados(serial, detalle_tipo_saneo_id);
 	}
 
 
@@ -405,6 +443,7 @@ public class SolicitudRestController {
 		newsolicitud.setFechaSolicitud(localDateTime);
 		newsolicitud.setTabla_id(ex.getId().toString());
 		newsolicitud.setSistema(tipoSistema);
+		newsolicitud.setEstado("ASIGNADO");
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION ********************************
 		LocalDate fecha = localDateTime.toLocalDate();
 		LocalTime hora = localDateTime.toLocalTime();	

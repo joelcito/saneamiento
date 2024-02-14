@@ -22,7 +22,29 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	@Query("SELECT so FROM Solicitud so WHERE so.UsuarioSolicitante.id =:usuario_solicitante_id ")
 	public List<Solicitud> listadoSolicitudes(@Param("usuario_solicitante_id") Long usuario_solicitante_id);
 	
+	@Query(value = "SELECT t.* "
+			+ "FROM saneamiento.extranjeria e INNER JOIN saneamiento.solicitud s "
+			+ "  ON e.id = CAST(s.tabla_id AS BIGINT) INNER JOIN saneamiento.tramite t "
+			+ "    ON s.id = t.solicitud_id "
+			+ "WHERE e.serialextregistros = :serialextregistros AND t.detalle_tipo_saneo_id = :detalle_tipo_saneo_id", nativeQuery = true)
+	public List<Map<String, Object>> verificaSiTieneTramatiesEnviados(@Param("serialextregistros") String serialextregistros, @Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
+	
+	
 	//**************** TABLA EXTRANJENRIA ****************
+	
+	@Query(value = "SELECT * "
+				+ "FROM solicitud s INNER JOIN extranjeria e "
+				+ "ON CAST(s.tabla_id AS BIGINT) = e.id INNER JOIN usuario u "
+				+ "ON s.solicitante_id = u.id "
+				+ "WHERE s.id = :solicitud_id", nativeQuery = true)
+	public Map<String, Object> solicitudesPorIdExtranjero(@Param("solicitud_id") Long solicitud_id);
+	
+	@Query(value = "SELECT * "
+			+ "FROM saneamiento.tramite t INNER JOIN saneamiento.tramite_detalle td "
+			+ "   ON t.id = td.tramite_id "
+			+ "WHERE t.solicitud_id = :solicitud_id", nativeQuery = true)
+	public List<Map<String, Object>> tramitesSolicitudesByIdSolicitud(@Param("solicitud_id") Long solicitud_id);	
+	
 	@Query("SELECT ex FROM Extranjeria ex WHERE ex.serialExtRegistros =:serialExtRegistros")
 	public Extranjeria buscaSerialExtranjero(@Param("serialExtRegistros") String serialExtRegistros);
 	

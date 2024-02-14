@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import javax.sql.DataSource;
 
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
@@ -19,15 +18,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableJpaRepositories(
 		basePackages = "com.saneamiento.models.comun.repository",
-		entityManagerFactoryRef = "postGressComunEMF",
-		transactionManagerRef = "postGreeComunTrxManager"
+		entityManagerFactoryRef = "postGressRuiSegipEMF",
+		transactionManagerRef = "postGreeRuiSegipTrxManager"
 )
 @EnableTransactionManagement
-public class PostGreeComunJpaConfig {
+public class PostGreeRuiSegipJpaConfig {
 	
-	@Bean("postGressComunEMF")
+	@Bean("postGressRuiSegipEMF")
 	public LocalContainerEntityManagerFactoryBean postGreeEntityManagerFactory(
-																				@Qualifier("postGreeComunDataSource") DataSource postGreeComunDS,
+																				@Qualifier("postGreeRuiSegipDataSource") DataSource postGreeRuiSegipDS,
 																				EntityManagerFactoryBuilder builder
 																				) {
 		
@@ -36,16 +35,17 @@ public class PostGreeComunJpaConfig {
 		//additionalPros.put("hibernate.hbm2ddl.auto", "update"); // Aquí agregas la propiedad
 		//additionalPros.put("spring.jpa.show-sql", "true"); // Aquí agregas la propiedad
 		
-		return builder.dataSource(postGreeComunDS)
-				.persistenceUnit("postGreeComun")
+		return builder.dataSource(postGreeRuiSegipDS)
+				.persistenceUnit("postGreeRuiSegip")
 				.properties(additionalPros)
 				.packages("com.saneamiento.models.comun.entity")
 				.build();
+		
 	}
 	
-
-	@Bean("postGreeComunTrxManager")
-	public JpaTransactionManager getPostGreeTrxManager(@Qualifier("postGressComunEMF") LocalContainerEntityManagerFactoryBean postGreeComunEMF ) {
-		return new JpaTransactionManager(Objects.requireNonNull(postGreeComunEMF.getObject()));
+	@Bean("postGreeRuiSegipTrxManager")
+	public JpaTransactionManager getPostGreeTrxManager(@Qualifier("postGressRuiSegipEMF") LocalContainerEntityManagerFactoryBean postGreeRuiSegipEMF ) {
+		return new JpaTransactionManager(Objects.requireNonNull(postGreeRuiSegipEMF.getObject()));
 	}
+
 }

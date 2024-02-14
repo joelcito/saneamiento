@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saneamiento.models.services.ExtranjeriaServiceImpl;
+import com.saneamiento.models.services.RuiSegipServiceImpl;
 
 @RestController
 @RequestMapping("/api/extranjeria")
@@ -21,6 +22,9 @@ public class ExtranjeriaRestController {
 	@Autowired
 	private ExtranjeriaServiceImpl extranjeriaSerice;
 	
+	@Autowired
+	private RuiSegipServiceImpl ruiSegipSerice;
+	
 	@GetMapping("/datos")
 	public List<Map<String, Object>> index(){
 		return this.extranjeriaSerice.listadoChe();
@@ -28,7 +32,16 @@ public class ExtranjeriaRestController {
 	
 	@PostMapping("/buscaExtranjero")
 	public List<Map<String, Object>> buscaExtranjero(@RequestBody Map<String, Object> requestBody) {
-		return this.extranjeriaSerice.buscaExtranjero(requestBody);
+		if(requestBody.containsKey("numero_cedula") && requestBody.get("numero_cedula") != null && !requestBody.get("numero_cedula").equals("")) {
+			String cedula = requestBody.get("numero_cedula").toString();			
+		 	Map<String, Object> res = this.ruiSegipSerice.buscarPersona(cedula);
+		 	if(res == null)		 		
+		 		return this.extranjeriaSerice.buscaExtranjero(requestBody);
+		 	else
+		 		return null;		 				
+		}else{
+			return this.extranjeriaSerice.buscaExtranjero(requestBody);
+		}		
 	}
 	
 	@PostMapping("/buscaExtranjeroPorSerial")

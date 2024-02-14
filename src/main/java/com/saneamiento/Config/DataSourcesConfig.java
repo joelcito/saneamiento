@@ -48,16 +48,22 @@ public class DataSourcesConfig {
 	
 	@Bean("sqlServerExtranjeriaDataSource")
 	public DataSource getSqlServerExtranjeriaDataSource() {
-		
-		
 		DataSourceProperties properties = getSqlServerExtranjeriaProperties();
         HikariDataSource dataSource = properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
         dataSource.setConnectionTestQuery("SELECT 1");  // Configura la consulta de prueba de conexión
-        return dataSource;
-		
+        return dataSource;		
 		//return getSqlServerExtranjeriaProperties().initializeDataSourceBuilder().build();
 	}
 	
+	// ******************  ESTO ES PARA EL COMUN ******************
+	@Bean("postGressRuiSegipProperties")
+	@ConfigurationProperties("spring.datasource.ruisegip")
+	public DataSourceProperties getPostGreeRuiSegipProperties() {
+		return new DataSourceProperties();
+	} 
 	
-	
+	@Bean("postGreeRuiSegipDataSource")
+	public DataSource getPostGreeRuiSegipDataSource() {
+		return getPostGreeRuiSegipProperties().initializeDataSourceBuilder().build();
+	}	
 }

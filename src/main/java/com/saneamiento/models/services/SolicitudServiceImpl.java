@@ -50,7 +50,25 @@ public class SolicitudServiceImpl implements ISolicitudService {
 		return this.solicitudDao.findById(id).orElse(null);
 	}
 	
-	//*********************** EXTRANJERIA *********************** 
+	@Override
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> verificaSiTieneTramatiesEnviados(String serialextregistros,Long detalle_tipo_saneo_id) {
+		return this.solicitudDao.verificaSiTieneTramatiesEnviados(serialextregistros, detalle_tipo_saneo_id);
+	}
+	
+	//*********************** EXTRANJERIA ***********************
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> tramitesSolicitudesByIdSolicitud(Long solicitud_id) {
+		return this.solicitudDao.tramitesSolicitudesByIdSolicitud(solicitud_id);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Map<String, Object> solicitudesPorIdExtranjero(Long solicitud_id) {
+		return this.solicitudDao.solicitudesPorIdExtranjero(solicitud_id);
+	}
 
 	@Override
 	@Transactional

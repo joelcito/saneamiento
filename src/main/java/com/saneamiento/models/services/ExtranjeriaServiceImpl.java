@@ -16,12 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExtranjeriaServiceImpl {
 
 	
+	// ****************** PARA LA CONEXION A EXGRANJERIA ******************
 	private final JdbcTemplate jdbcTemplate;
 
     public ExtranjeriaServiceImpl(@Qualifier("sqlServerExtranjeriaDataSource") DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
-    
+   
     @Transactional(readOnly = true)
     public List<Map<String, Object>> listadoChe(){
     	String sql = "SELECT * FROM ExtRegistros er WHERE er.NroCedulaBolExtRegistros = '0070144'";
@@ -31,41 +32,67 @@ public class ExtranjeriaServiceImpl {
     @Transactional(readOnly = true)
     public List<Map<String, Object>> buscaExtranjero(Map<String, Object> datos) {
     	
-	  //StringBuilder sql = new StringBuilder("SELECT * FROM ExtRegistros er INNER JOIN ExtImagenes ei ON ei.SerialExtRegistros = er.SerialExtRegistros WHERE 1=1");
-	  //StringBuilder sql = new StringBuilder("SELECT * FROM ExtRegistros er WHERE 1=1");
-	  StringBuilder sql = new StringBuilder("SELECT * FROM ExtRegistros er INNER JOIN SegUsuarios su ON er.UsuModExtRegistros = su.LoginSegUsuarios WHERE 1=1");	  
-	  if (datos.containsKey("numero_cedula") && datos.get("numero_cedula") != null && !datos.get("numero_cedula").equals("")) {
-	     sql.append(" AND er.NroCedulaBolExtRegistros = '").append(datos.get("numero_cedula")).append("'");
-	  }
+		//System.out.println(datos);
+		
+		StringBuilder sql = new StringBuilder("SELECT * FROM ExtRegistros er INNER JOIN SegUsuarios su ON er.UsuModExtRegistros = su.LoginSegUsuarios WHERE 1 = 1");
+		
+		/*
+		if(datos.containsKey("numero_cedula") && datos.get("numero_cedula") != null && !datos.get("numero_cedula").equals("")) {
+			
+			System.out.println("haber aqu");
+			
+			if(true) {
+				sql.append(" AND er.NroCedulaBolExtRegistros = '").append(datos.get("numero_cedula")).append("'");
+			}else {
+				
+			}
+			
+		}else {
+			if (datos.containsKey("complemento") && datos.get("complemento") != null && !datos.get("complemento").equals("")) {
+			     sql.append(" AND er.HexadecimalExtRegistros = '").append(datos.get("complemento")).append("'");
+			  }
+			  
+			  if (datos.containsKey("nombres") && datos.get("nombres") != null && !datos.get("nombres").equals("")) {
+			     sql.append(" AND er.NombresExtRegistros = '").append(datos.get("nombres")).append("'");
+			  }
+			  
+			  if (datos.containsKey("primer_apellido") && datos.get("primer_apellido") != null && !datos.get("primer_apellido").equals("")) {
+			     sql.append(" AND er.PrimerApExtRegistros = '").append(datos.get("primer_apellido")).append("'");
+			  }
+			  
+			  if (datos.containsKey("segundo_apellido") && datos.get("segundo_apellido") != null && !datos.get("segundo_apellido").equals("")) {
+			     sql.append(" AND er.SegundoApExtRegistros = '").append(datos.get("segundo_apellido")).append("'");
+			  }
+		}   
+		
+		   */
 	  
-	  if (datos.containsKey("complemento") && datos.get("complemento") != null && !datos.get("complemento").equals("")) {
-	     sql.append(" AND er.HexadecimalExtRegistros = '").append(datos.get("complemento")).append("'");
-	  }
+		
+			//StringBuilder sql = new StringBuilder("SELECT * FROM ExtRegistros er INNER JOIN SegUsuarios su ON er.UsuModExtRegistros = su.LoginSegUsuarios WHERE 1=1");
+			  	  
+		  if (datos.containsKey("numero_cedula") && datos.get("numero_cedula") != null && !datos.get("numero_cedula").equals("")) {
+		     sql.append(" AND er.NroCedulaBolExtRegistros = '").append(datos.get("numero_cedula")).append("'");
+		  }
+		  
+		  if (datos.containsKey("complemento") && datos.get("complemento") != null && !datos.get("complemento").equals("")) {
+		     sql.append(" AND er.HexadecimalExtRegistros = '").append(datos.get("complemento")).append("'");
+		  }
+		  
+		  if (datos.containsKey("nombres") && datos.get("nombres") != null && !datos.get("nombres").equals("")) {
+		     sql.append(" AND er.NombresExtRegistros = '").append(datos.get("nombres")).append("'");
+		  }
+		  
+		  if (datos.containsKey("primer_apellido") && datos.get("primer_apellido") != null && !datos.get("primer_apellido").equals("")) {
+		     sql.append(" AND er.PrimerApExtRegistros = '").append(datos.get("primer_apellido")).append("'");
+		  }
+		  
+		  if (datos.containsKey("segundo_apellido") && datos.get("segundo_apellido") != null && !datos.get("segundo_apellido").equals("")) {
+		     sql.append(" AND er.SegundoApExtRegistros = '").append(datos.get("segundo_apellido")).append("'");
+		  }
+		  	  	  
+		  //System.out.println(sql.toString());
 	  
-	  if (datos.containsKey("nombres") && datos.get("nombres") != null && !datos.get("nombres").equals("")) {
-	     sql.append(" AND er.NombresExtRegistros = '").append(datos.get("nombres")).append("'");
-	  }
-	  
-	  if (datos.containsKey("primer_apellido") && datos.get("primer_apellido") != null && !datos.get("primer_apellido").equals("")) {
-	     sql.append(" AND er.PrimerApExtRegistros = '").append(datos.get("primer_apellido")).append("'");
-	  }
-	  
-	  if (datos.containsKey("segundo_apellido") && datos.get("segundo_apellido") != null && !datos.get("segundo_apellido").equals("")) {
-	     sql.append(" AND er.SegundoApExtRegistros = '").append(datos.get("segundo_apellido")).append("'");
-	  }
-	  
-	  //sql.append(" AND ei.CodigoExtTipoImagen = 3");
-	  	  
-	  System.out.println(sql.toString());
-	  
-	  /*
-	  System.out.println(datos);
-	  System.out.println(datos.get("complemento") != null);
-	  System.out.println(datos.containsKey("complemento"));
-	  System.out.println(!datos.get("complemento").equals(""));
-	  System.out.println(!datos.get("numero_cedula").equals(""));
-	  */
-	  
+		
 	  // Ejecutar la consulta
 	  return jdbcTemplate.queryForList(sql.toString());
  	

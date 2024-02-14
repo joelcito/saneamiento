@@ -15,6 +15,8 @@ public interface ISolicitudService {
 	
 	public List<Solicitud> findAll();
 	
+	public List<Map<String, Object>> verificaSiTieneTramatiesEnviados(String serialextregistros, Long detalle_tipo_saneo_id);
+	
 	public Solicitud save(Solicitud solicitud);
 	
 	public Solicitud findById(Long id);
@@ -28,6 +30,10 @@ public interface ISolicitudService {
 	public Tramite buscaByTipoSolicitudBySolicitudId(Long solicitud_id,Long detalle_tipo_saneo_id);
 	
 	public int saveTramiteDetalle(Long tramite_id,String pregunta,String respuesta);
+	
+	public Map<String, Object> solicitudesPorIdExtranjero(Long solicitud_id);
+	
+	public List<Map<String, Object>> tramitesSolicitudesByIdSolicitud(Long solicitud_id);
 	
 	//***************** PARA LA ASIGNACION AUTOMATICA *****************
 	//public List<Regla> getReglasVigentes(String horaParam,LocalDate startDate,LocalDate endDate);
