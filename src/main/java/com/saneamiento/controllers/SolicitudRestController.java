@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Formulario;
-import com.saneamiento.models.entity.Regla;
 import com.saneamiento.models.entity.Solicitud;
 import com.saneamiento.models.entity.Tramite;
 import com.saneamiento.models.entity.Usuario;
@@ -50,21 +49,11 @@ public class SolicitudRestController {
 	//@GetMapping("/listado")
 	@PostMapping("/listado")
 	public List<Solicitud> listado(@RequestBody Map<String, Object> requestBody){
-		
-		//System.out.println(requestBody);
-		
 		Long user_id = Long.parseLong(requestBody.get("id").toString());
-		
-		
-		//List<Solicitud> solicitudes = this.solicitudService.findAll();
-		
 		List<Solicitud> solicitudes = this.solicitudService.listadoSolicitudes(user_id);
-
 	    // Sort the list in descending order based on a specific field
 	    Collections.sort(solicitudes, Comparator.comparing(Solicitud::getId).reversed());
-
 	    return solicitudes;
-		//return this.solicitudService.findAll();
 	}
 	
 	//**************** PARA EL LISTADO DE TRAMITES SEGUN SOLICITUDES ****************
@@ -82,12 +71,10 @@ public class SolicitudRestController {
 		
 		Long user_id = Long.parseLong(requestBody.get("id").toString());
 		
-		//System.out.println(user_id);
-		
 		List<Solicitud> solicitudes = this.solicitudService.listadoSolicitudesAsignados(user_id);
-		
+			
 		// Sort the list in descending order based on a specific field
-	    Collections.sort(solicitudes, Comparator.comparing(Solicitud::getId).reversed());
+		Collections.sort(solicitudes, Comparator.comparing(Solicitud::getId).reversed());
 
 	    return solicitudes;	    
 		
@@ -356,24 +343,38 @@ public class SolicitudRestController {
 	
 	@PostMapping("/sanearDirectiva0082019")
 	public Solicitud sanearDirectiva0082019(@RequestBody Map<String, Object> requestBody) {
+
+		Long solicitud_id 		= Long.parseLong(requestBody.get("solicitud").toString());		
+		Solicitud soliBuscado 	= this.solicitudService.findById(solicitud_id);
 		
-		System.out.println(requestBody);
-		
-		Long solicitud_id = Long.parseLong(requestBody.get("solicitud").toString());
-		
-		Solicitud soliBuscado = this.solicitudService.findById(solicitud_id);
+		Long usuario_id  		= Long.parseLong(requestBody.get("usuario").toString());
+		Usuario usuarioBuscado	= this.usuarioService.findById(usuario_id);
 		
 		soliBuscado.setEstado("PROCESADO");
+		soliBuscado.setUsuarioRespuesta(usuarioBuscado);
+		soliBuscado.setUsuario_modificador(usuario_id.toString());
 		
 		Instant instant = new Date().toInstant();
 		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
 
 		soliBuscado.setFechaRespuesta(localDateTime);
+		soliBuscado.setFechaModificacion(localDateTime);
 		
 		this.solicitudService.save(soliBuscado);
 		
-		return soliBuscado;
+		return soliBuscado;		
+		
 	}
+
+	/*
+	@PostMapping("/saneoCambioBandeja")
+	public Solicitud saneoCambioBandeja(@RequestBody Map<String, Object> requestBody) {
+		
+		System.out.println(requestBody);
+		
+		return new Solicitud();
+	}
+	*/
 	
 	@PostMapping("/verificaSiTieneTramatiesEnviados")
 	public List<Map<String, Object>> verificaSiTieneTramatiesEnviados(@RequestBody Map<String, Object> requestBody) {

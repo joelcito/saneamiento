@@ -18,11 +18,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Data
@@ -36,6 +39,15 @@ public class Usuario implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@Column(name="usuario_creador", length = 10)
+	private String UsuarioCreador;
+	
+	@Column(name="usuario_modificador", length = 10)
+	private String UsuarioModificador;
+	
+	@Column(name="usuario_eliminador", length = 10)
+	private String UsuarioEliminador;
 
 	@Column(unique = true, length = 100, nullable = false)
 	private String username;
@@ -79,6 +91,15 @@ public class Usuario implements UserDetails {
 			inverseJoinColumns =@JoinColumn(name="rol_id")
 			)
 	private List<Rol> roles;
+	
+	@Column(name = "fecha_creacion", columnDefinition = "TIMESTAMP")
+    private LocalDateTime fechaCreacion;
+	
+	@Column(name = "fecha_modificacion", columnDefinition = "TIMESTAMP")
+    private LocalDateTime fechaModificacion;
+
+	@Column(name = "fecha_eliminacion", columnDefinition = "TIMESTAMP")
+    private LocalDateTime fechaEliminacion;
 
 	
 

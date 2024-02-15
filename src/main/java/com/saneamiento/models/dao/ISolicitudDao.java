@@ -17,6 +17,7 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
 	//**************** SOLICITUD ****************
 	@Query("SELECT so FROM Solicitud so WHERE so.UsuarioAsignado.id =:usuario_asignado_id ")
+	//@Query(value = "SELECT s.id, s.descripcion, s.fecha_respuesta, s.fecha_solicitud, s.asignado_id, s.respuesta_id, s.solicitante_id, s.sistema, s.tabla_id, s.formulario_id, s.estado, s.fecha_creacion, s.fecha_eliminacion, s.fecha_modificacion, s.usuario_creador, s.usuario_eliminador, s.usuario_modificador FROM saneamiento.solicitud s WHERE s.asignado_id =:usuario_asignado_id ", nativeQuery = true)
 	public List<Solicitud> listadoSolicitudesAsignados(@Param("usuario_asignado_id") Long usuario_asignado_id);
 
 	@Query("SELECT so FROM Solicitud so WHERE so.UsuarioSolicitante.id =:usuario_solicitante_id ")

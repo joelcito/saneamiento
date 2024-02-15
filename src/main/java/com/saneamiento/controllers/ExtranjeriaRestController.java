@@ -49,6 +49,11 @@ public class ExtranjeriaRestController {
 		return this.extranjeriaSerice.buscarporSerialExtranjero(requestBody);
 	}
 	
+	@PostMapping("/saneoCambioBandeja")
+	public Map<String, Object> saneoCambioBandeja(@RequestBody Map<String, Object> request){
+		return this.extranjeriaSerice.saneoCambioBandeja(request);
+	}
+	
 	
 	
 	/*

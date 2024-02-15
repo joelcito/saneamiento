@@ -107,6 +107,22 @@ public class ExtranjeriaServiceImpl {
     	return jdbcTemplate.queryForMap(sql.toString());
     }
     
+    @Transactional
+    public Map<String, Object> saneoCambioBandeja(Map<String, Object> datos) {
+    	
+    	//System.out.println(datos);
+    	String tipo 				= datos.get("tipo_cambio").toString();
+    	String serialExtRegistros 	= datos.get("serialExtRegistros").toString();
+    	String nroCedulaExt 		= datos.get("nro_cedula").toString();
+    	String idUnicoExt 			= datos.get("id_unico_extr").toString();
+    	
+    	 return jdbcTemplate.queryForMap(
+	            //"DECLARE @resultado INT; EXEC @resultado = dbo.sp_dbw_CambiodeBandeja_12312 ?, ?, ?, ?; SELECT @resultado AS Resultado;",
+	            "DECLARE @resultado INT; EXEC @resultado = dbo.sp_dbw_CambiodeBandeja ?, ?, ?, ?; SELECT @resultado AS Resultado;",
+	            	tipo, serialExtRegistros, nroCedulaExt, idUnicoExt
+    	        );
+	}
+    
     
     /*
     public ResponseEntity<byte[]> getImagenExtranjero(Map<String, Object> datos) {
