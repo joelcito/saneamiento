@@ -54,6 +54,11 @@ public class ExtranjeriaRestController {
 		return this.extranjeriaSerice.saneoCambioBandeja(request);
 	}
 	
+	@PostMapping("/getDatosParametricas")
+	public List<Map<String, Object>> getDatosParametricas(@RequestBody Map<String, Object> requestBody){
+		return this.extranjeriaSerice.getDatosParametricas(requestBody);
+	}
+	
 	
 	
 	/*

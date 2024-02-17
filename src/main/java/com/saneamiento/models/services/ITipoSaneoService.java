@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.saneamiento.models.entity.DetalleTipoSaneo;
 import com.saneamiento.models.entity.DocumentoDetalleTipoSaneo;
+import com.saneamiento.models.entity.TipoDetalleTipoSaneo;
 import com.saneamiento.models.entity.TipoSaneo;
 
 public interface ITipoSaneoService {
@@ -28,5 +29,7 @@ public interface ITipoSaneoService {
 	public int saveDocumentoDetalleTipoSaneo(String nombre, DetalleTipoSaneo detalleTipoSaneo);
 	
 	public Object[] getTipoSaneoDetalle(Long detalleTipoSaneoId);
-	 
+
+	// ***************** TIPO DETALLE TIPO SANEO *****************
+	public  List<TipoDetalleTipoSaneo> getTiposDetallesTipoSaneo();
 }

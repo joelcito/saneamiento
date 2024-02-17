@@ -31,8 +31,8 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	public List<Map<String, Object>> verificaSiTieneTramatiesEnviados(@Param("serialextregistros") String serialextregistros, @Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
 	
 	
-	//**************** TABLA EXTRANJENRIA ****************
 	
+	//**************** TABLA EXTRANJENRIA ****************	
 	@Query(value = "SELECT * "
 				+ "FROM solicitud s INNER JOIN extranjeria e "
 				+ "ON CAST(s.tabla_id AS BIGINT) = e.id INNER JOIN usuario u "
@@ -53,6 +53,7 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	@Query("INSERT INTO Extranjeria (serialExtRegistros, serialDocumentoExtRegistros, nroCedulaBolExtRegistros) VALUES (:serialExtRegistros, :serialDocumentoExtRegistros, :nroCedulaBolExtRegistros)")	
 	public int saveExtranjeria(@Param("serialExtRegistros") String serialExtRegistros, @Param("serialDocumentoExtRegistros") String serialDocumentoExtRegistros, @Param("nroCedulaBolExtRegistros") String nroCedulaBolExtRegistros);
 	
+	
 	//**************** TABLA TRAMITE ****************
 	@Modifying
 	@Query(value = "INSERT INTO tramite (detalle_tipo_saneo_id, solicitud_id) VALUES (:detalle_tipo_saneo_id, :solicitud_id)", nativeQuery = true)
@@ -60,11 +61,13 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
 	@Query("SELECT tr FROM Tramite tr WHERE tr.solicitud.id = :solicitud_id AND tr.detalleTipoSaneo.id = :detalle_tipo_saneo_id")
 	public Tramite buscaByTipoSolicitudBySolicitudId(@Param("solicitud_id") Long solicitud_id, @Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
+	
 		
 	//**************** TABLA TRAMITE DETALLE ****************
 	@Modifying
 	@Query(value = "INSERT INTO tramite_detalle (tramite_id, pregunta, respuesta) VALUES (:tramite_id, :pregunta, :respuesta)", nativeQuery = true)
 	public int saveTramiteDetalle(@Param("tramite_id") Long tramite_id, @Param("pregunta") String pregunta, @Param("respuesta") String respuesta);
+	
 		
 	//***************** PARA LA ASIGNACION AUTOMATICA *****************
 	@Query(value = "SELECT * FROM regla r " +

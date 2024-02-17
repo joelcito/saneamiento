@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.saneamiento.models.entity.DetalleTipoSaneo;
 import com.saneamiento.models.entity.DocumentoDetalleTipoSaneo;
+import com.saneamiento.models.entity.TipoDetalleTipoSaneo;
 import com.saneamiento.models.entity.TipoSaneo;
 import com.saneamiento.models.services.ITipoSaneoService;
 
@@ -140,6 +141,13 @@ public class TipoSaneoRestController {
 		this.tipoSaneoService.save(tipo_saneo);
 		
 		return new DocumentoDetalleTipoSaneo();
+	}
+	
+	
+	// ***************** TIPO DETALLE TIPO SANEO *****************
+	@GetMapping("/getTiposDetallesTipoSaneo/")
+	public List<TipoDetalleTipoSaneo> getTiposDetallesTipoSaneo() {
+		return this.tipoSaneoService.getTiposDetallesTipoSaneo();
 	}
 	
 }

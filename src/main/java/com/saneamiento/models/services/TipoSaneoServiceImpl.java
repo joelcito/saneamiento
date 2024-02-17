@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.saneamiento.models.dao.ITipoSaneoDao;
 import com.saneamiento.models.entity.DetalleTipoSaneo;
 import com.saneamiento.models.entity.DocumentoDetalleTipoSaneo;
+import com.saneamiento.models.entity.TipoDetalleTipoSaneo;
 import com.saneamiento.models.entity.TipoSaneo;
 
 @Service
@@ -77,6 +78,13 @@ public class TipoSaneoServiceImpl implements ITipoSaneoService{
 	@Transactional(readOnly = true)
 	public Object[] getTipoSaneoDetalle(Long detalleTipoSaneoId) {
 		return this.tipoSaneoDao.getTipoSaneoDetalle(detalleTipoSaneoId);
+	}
+
+	// ***************** TIPO DETALLE TIPO SANEO *****************
+	@Override
+	@Transactional(readOnly = true)
+	public List<TipoDetalleTipoSaneo> getTiposDetallesTipoSaneo() {
+		return this.tipoSaneoDao.getTiposDetallesTipoSaneo();
 	}
 
 }

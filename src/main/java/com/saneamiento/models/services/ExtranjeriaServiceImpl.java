@@ -123,6 +123,13 @@ public class ExtranjeriaServiceImpl {
     	        );
 	}
     
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getDatosParametricas(Map<String, Object> requestBody) {
+		StringBuilder sql = new StringBuilder("SELECT * FROM ");
+		sql.append(requestBody.get("tabla")).append(" WHERE 1 = 1 ");
+    	return jdbcTemplate.queryForList(sql.toString());		
+    }
+    
     
     /*
     public ResponseEntity<byte[]> getImagenExtranjero(Map<String, Object> datos) {

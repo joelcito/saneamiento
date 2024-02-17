@@ -46,6 +46,10 @@ public class TipoDetalleTipoSaneo implements Serializable{
 	
 	private String tipo_dato;
 	
+	private String tipo_campo;
+	
+	private String tabla;
+	
 	@Column(name = "fecha_creacion", columnDefinition = "TIMESTAMP")
     private LocalDateTime fechaCreacion;
 	
