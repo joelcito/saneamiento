@@ -1,9 +1,12 @@
 package com.saneamiento.models.dao;
 
+import java.security.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -21,7 +24,14 @@ public interface IUsuarioDao extends CrudRepository<Usuario, Long> {
 	@Query("select u from Usuario u where u.username=?1")
 	public Usuario findByUsernameNative(String username);
 	
-	Optional<Usuario> findByUsername(String usrename);
+	Optional<Usuario> findByUsername(String usrename);	
+	
+	@Modifying
+    @Query("UPDATE Usuario u SET u.fechaEliminacion = :fecha WHERE u.id = :id")
+    int deleteUsuario(@Param("id") Long id, @Param("fecha") LocalDateTime fecha);
+	
+	@Query("SELECT u FROM Usuario u WHERE u.fechaEliminacion is NULL ORDER BY u.id DESC")
+	List<Usuario> listadoUsuarioVigentes();
 	
 	
 	// ********* USUARIO ROL ********* 

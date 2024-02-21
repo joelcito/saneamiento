@@ -1,11 +1,13 @@
 package com.saneamiento.controllers;
 
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +32,8 @@ public class TipoSaneoRestController {
 	
 	@GetMapping("/listado")
 	public List<TipoSaneo> index() {
-		return tipoSaneoService.findAll();
+		//return tipoSaneoService.findAll();
+		return this.tipoSaneoService.listadoRolVigentes();
 	}
 	
 	@PostMapping("/")
@@ -59,6 +62,12 @@ public class TipoSaneoRestController {
 	@GetMapping("/{tipo_saneo_id}")
 	private TipoSaneo findById(@PathVariable Long tipo_saneo_id) {
 		return this.tipoSaneoService.findById(tipo_saneo_id);
+	}
+	
+	@DeleteMapping("/deleteTipoSaneo/{id}")
+	private int deleteRol(@PathVariable Long id) {
+		LocalDateTime fechaYHoraActual = LocalDateTime.now();
+		return this.tipoSaneoService.deleteTipoSaneo(id, fechaYHoraActual);
 	}
 	
 	// ***************** DETALLE TIPO SANEO *****************

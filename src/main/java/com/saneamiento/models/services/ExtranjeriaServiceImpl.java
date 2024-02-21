@@ -1,5 +1,10 @@
 package com.saneamiento.models.services;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -117,7 +122,6 @@ public class ExtranjeriaServiceImpl {
     	String idUnicoExt 			= datos.get("id_unico_extr").toString();
     	
     	 return jdbcTemplate.queryForMap(
-	            //"DECLARE @resultado INT; EXEC @resultado = dbo.sp_dbw_CambiodeBandeja_12312 ?, ?, ?, ?; SELECT @resultado AS Resultado;",
 	            "DECLARE @resultado INT; EXEC @resultado = dbo.sp_dbw_CambiodeBandeja ?, ?, ?, ?; SELECT @resultado AS Resultado;",
 	            	tipo, serialExtRegistros, nroCedulaExt, idUnicoExt
     	        );
@@ -128,6 +132,58 @@ public class ExtranjeriaServiceImpl {
 		StringBuilder sql = new StringBuilder("SELECT * FROM ");
 		sql.append(requestBody.get("tabla")).append(" WHERE 1 = 1 ");
     	return jdbcTemplate.queryForList(sql.toString());		
+    }
+    
+    
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> saneoCorrecionCIESqlServer(Map<String, Object> requestBody) {
+    	
+    	//System.out.println(requestBody);    	
+    	
+    	String serialExtRegistros = requestBody.get("serialExtRegistros").toString();
+    	String nro_cedula = requestBody.get("nro_cedula").toString();
+    	String id_unico = requestBody.get("id_unico").toString();
+    	
+    	List<Map<String, Object>> listado = (List<Map<String, Object>>) requestBody.get("modificacion"); 
+    	
+    	List<Map<String, Object>> respuestas = new ArrayList();
+    	
+    	for(Map<String, Object> da : listado) {
+    		
+    		//System.out.println("*************************************");    		
+    		//System.out.println(da);    		
+    		String campo 		= da.get("campo").toString();
+    		String actual 		= da.get("actual").toString();
+    		String modificar = da.get("modificar").toString();
+    		
+    		if(campo.contains("Fec")) {
+    			String fechaEnFormatoOriginal = modificar;
+    	        LocalDate fecha = LocalDate.parse(fechaEnFormatoOriginal, DateTimeFormatter.ofPattern("d/M/yyyy"));
+    	        modificar = fecha.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));   			
+    		}
+    		
+    		//System.out.println(campo);
+    		//System.out.println(actual);
+    		//System.out.println(modificar);
+    		
+    		Map<String, Object> respuesta = new HashMap();
+    		
+    		Map<String, Object> dest = jdbcTemplate.queryForMap(
+					//"EXEC  f_dbw_UpdateExtregistros N'100398980', N'1Ubzxt1I4n', N'8532', N'NombresExtRegistros', N'ISAO ', N'JOEL FLORES';"
+					"EXEC  f_dbw_UpdateExtregistros ?, ?, ?, ?, ?;"
+					,nro_cedula, serialExtRegistros, id_unico, campo, modificar
+					);
+    		//System.out.println(dest);
+    		
+    		respuesta.put("campo",campo);
+    		respuesta.put("respuesta",dest.get("PROCESADO"));
+    		respuesta.put("mensaje",(((boolean) dest.get("PROCESADO"))? "¡SI FUE MODIFICADO!" : "¡NO FUE MODIFICADO!"));   		
+    		
+    		respuestas.add(respuesta);
+   				
+    	}
+    	    	
+    	return respuestas;
     }
     
     

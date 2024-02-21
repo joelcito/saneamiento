@@ -1,5 +1,6 @@
 package com.saneamiento.models.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +61,16 @@ public class UsuarioServiceImpl implements IUsuarioService {
 		return this.usuarioDao.actualizarMenusUsuarioRol(usuarioRolId, nuevosMenus);
 	}
 
+	@Override
+	@Transactional
+	public int deleteUsuario(Long id, LocalDateTime date) {
+		return this.usuarioDao.deleteUsuario(id, date);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Usuario> listadoUsuarioVigentes() {
+		return this.usuarioDao.listadoUsuarioVigentes();
+	}
 	
 }

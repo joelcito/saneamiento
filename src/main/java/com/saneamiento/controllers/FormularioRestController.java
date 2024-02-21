@@ -1,5 +1,9 @@
 package com.saneamiento.controllers;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.saneamiento.models.entity.Formulario;
 import com.saneamiento.models.entity.FormularioPregunta;
+import com.saneamiento.models.entity.TipoSaneo;
+import com.saneamiento.models.entity.Usuario;
 import com.saneamiento.models.services.IFormularioService;
+import com.saneamiento.models.services.ITipoSaneoService;
+import com.saneamiento.models.services.IUsuarioService;
 
 @RestController
 @RequestMapping("/api/formulario")
@@ -22,6 +30,12 @@ import com.saneamiento.models.services.IFormularioService;
 public class FormularioRestController {
 	@Autowired
 	private IFormularioService formularioService;
+	
+	@Autowired
+	private ITipoSaneoService tipoSaneoService;
+	
+	@Autowired
+	private IUsuarioService usuarioService;
 	
 	@GetMapping("/listado")
 	private List<Formulario> name() {
@@ -34,6 +48,15 @@ public class FormularioRestController {
 		Formulario newFor = new Formulario();
 		newFor.setNombre(requestBody.get("nombre").toString());
 		newFor.setSigla(requestBody.get("sigla").toString());
+		
+		Long tipo_saneo_id = Long.parseLong(requestBody.get("tipo_saneo").toString());
+		TipoSaneo tipoSaneoBuscado = this.tipoSaneoService.findById(tipo_saneo_id);
+		newFor.setTipoSaneoFormulario(tipoSaneoBuscado);
+		
+		Instant instant = new Date().toInstant();
+		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+		newFor.setFechaCreacion(localDateTime);
+		newFor.setUsuarioCreador(requestBody.get("usuario").toString());			
 		
 		return this.formularioService.save(newFor);
 		

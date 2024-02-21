@@ -1,5 +1,6 @@
 package com.saneamiento.controllers;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +38,8 @@ public class UsuarioRestController {
 	
 	@GetMapping("/listado")
 	public List<Usuario> index() {
-		return this.usuarioService.findAll();
+		//return this.usuarioService.findAll();
+		return this.usuarioService.listadoUsuarioVigentes();
 	}
 	
 	@PostMapping("/detalle")
@@ -47,6 +50,12 @@ public class UsuarioRestController {
 	@PostMapping("/{id}")
 	public Usuario findById(@PathVariable Long id) {
 		return this.usuarioService.findById(id);
+	}
+	
+	@DeleteMapping("/deleteUsuer/{id}")
+	public int deleteUsuario(@PathVariable Long id){
+		LocalDateTime fechaYHoraActual = LocalDateTime.now();
+		return this.usuarioService.deleteUsuario(id, fechaYHoraActual);
 	}
 	
 	@PostMapping("/menu")
@@ -176,6 +185,8 @@ public class UsuarioRestController {
 				
 		return ur;
 	}
+	
+	
 	
 	
 	//***************************** FUNCIONES PRIVADAS ****************************

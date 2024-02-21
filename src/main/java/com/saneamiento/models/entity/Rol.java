@@ -32,7 +32,7 @@ public class Rol implements Serializable{
 	@Column(name="usuario_eliminador", length = 10)
 	private String UsuarioEliminador;
 	
-	@Column(unique=true, length=20)
+	@Column(unique=true, length=100)
 	private String nombre;
 	
 	@Column(length = 1000)

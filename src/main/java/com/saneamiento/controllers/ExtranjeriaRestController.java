@@ -59,6 +59,11 @@ public class ExtranjeriaRestController {
 		return this.extranjeriaSerice.getDatosParametricas(requestBody);
 	}
 	
+	@PostMapping("/saneoCorrecionCIESqlServer")
+	public List<Map<String, Object>> saneoCorrecionCIESqlServer (@RequestBody Map<String, Object> requestBody) {
+		return this.extranjeriaSerice.saneoCorrecionCIESqlServer(requestBody);
+	}
+	
 	
 	
 	/*

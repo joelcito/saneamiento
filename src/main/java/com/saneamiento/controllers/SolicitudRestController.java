@@ -1,10 +1,12 @@
 package com.saneamiento.controllers;
 
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -278,13 +280,7 @@ public class SolicitudRestController {
 		    }
 		});
 		       
-        
-        /*
-		System.out.println(localDateTime);
-		System.out.println(fecha);
-		System.out.println(hora);
-		*/				
-				
+      			
 		return savedSolicitud;
 	}
 	
@@ -297,27 +293,27 @@ public class SolicitudRestController {
 		Extranjeria ex =  this.solicitudService.buscaSerialExtranjero(serialExtRegistros);	
 		
 		if(ex == null) {			
-			String serialDocumentoExtRegistros =  requestbody.get("serialDocumentoExtRegistros").toString();
-			String nroCedulaBolExtRegistros =  requestbody.get("nroCedulaBolExtRegistros").toString();
+			String serialDocumentoExtRegistros = requestbody.get("serialDocumentoExtRegistros").toString();
+			String nroCedulaBolExtRegistros    = requestbody.get("nroCedulaBolExtRegistros").toString();
 			this.solicitudService.saveExtranjeria(serialExtRegistros, serialDocumentoExtRegistros, nroCedulaBolExtRegistros);
 			ex =  this.solicitudService.buscaSerialExtranjero(serialExtRegistros);
 		}
 		
-		Long formulario_id = Long.parseLong(requestbody.get("formulario_id").toString());
-		Formulario formBuscado 	= this.formularioService.findById(formulario_id);
+		Long       formulario_id = Long.parseLong(requestbody.get("formulario_id").toString());
+		Formulario formBuscado   = this.formularioService.findById(formulario_id);
 		
-		Long solicitante_id = Long.parseLong(requestbody.get("funcionario_id").toString());
-		Usuario usuarioSolicitante  =  this.usuarioService.findById(solicitante_id);
+		Long    solicitante_id     = Long.parseLong(requestbody.get("funcionario_id").toString());
+		Usuario usuarioSolicitante = this.usuarioService.findById(solicitante_id);
 		
 		Long tipo_solicitud_id = Long.parseLong(requestbody.get("tipo_solicitud").toString());
 
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
-		String tipoSistema = "extranjeria";
+		String    tipoSistema  = "extranjeria";
 		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema);
 		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 
 		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
-		Long newSolicitudId = savedSolicitud.getId();
+		Long      newSolicitudId = savedSolicitud.getId();
 
 		this.solicitudService.saveTramite(tipo_solicitud_id, newSolicitudId);
 		Tramite tramiteBuscado = this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
@@ -338,6 +334,73 @@ public class SolicitudRestController {
 		    }
 		});	
 				
+		return savedSolicitud;
+	}
+	
+	@PostMapping("/saveCorreccionesCIE")
+	public  Solicitud saveCorreccionesCIE(@RequestBody Map<String, Object> requestBody) {
+				
+		String serialExtRegistros 	= requestBody.get("serialExtRegistros").toString();
+		Extranjeria ex 				= this.solicitudService.buscaSerialExtranjero(serialExtRegistros);	
+		
+		if(ex == null) {			
+			String serialDocumentoExtRegistros = requestBody.get("serialDocumentoExtRegistros").toString();
+			String nroCedulaBolExtRegistros    = requestBody.get("nroCedulaBolExtRegistros").toString();
+			this.solicitudService.saveExtranjeria(serialExtRegistros, serialDocumentoExtRegistros, nroCedulaBolExtRegistros);
+			ex = this.solicitudService.buscaSerialExtranjero(serialExtRegistros);
+		}
+		
+		Long       formulario_id = Long.parseLong(requestBody.get("formulario_id").toString());
+		Formulario formBuscado   = this.formularioService.findById(formulario_id);
+		
+		Long    solicitante_id     = Long.parseLong(requestBody.get("funcionario_id").toString());
+		Usuario usuarioSolicitante = this.usuarioService.findById(solicitante_id);
+		
+		Long tipo_solicitud_id = Long.parseLong(requestBody.get("tipo_solicitud").toString());
+		
+		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
+		String    tipoSistema  = "extranjeria";
+		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema);
+		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
+		
+		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
+		Long      newSolicitudId = savedSolicitud.getId();
+		
+		this.solicitudService.saveTramite(tipo_solicitud_id, newSolicitudId);
+		Tramite tramiteBuscado 		= this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
+		Long tramite_id 			= tramiteBuscado.getId();
+		
+		//**************** PARA EL TRAMITE DETALLE****************
+    	requestBody.forEach((key, valor) -> {
+			if( valor instanceof Boolean && (Boolean) valor) {    	
+				
+    			String[] parts = key.split("_");
+    			
+    			System.out.println("*****************************");
+    			System.out.println(parts[1]);
+    			String dato_actual   = ((requestBody.get("actual_"+parts[1]) != null) ? requestBody.get("actual_"+parts[1]).toString() : "" );
+    			String dato_corregir = "";
+    			if(parts[1].contains("Fec")) {
+    				
+    				String fechaEnFormatoOriginal = requestBody.get("nuevo_"+parts[1]).toString();
+    				LocalDate fecha = LocalDate.parse(fechaEnFormatoOriginal);
+    				//dato_corregir = fecha.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    				dato_corregir = fecha.format(DateTimeFormatter.ofPattern("d/M/yyyy"));
+
+    			}else {
+    				dato_corregir = ((requestBody.get("nuevo_"+parts[1]) != null) ? requestBody.get("nuevo_"+parts[1]).toString() : "" );	
+    			}
+    			//System.out.println(requestBody.get("actual_"+parts[1]));
+    			//System.out.println(requestBody.get("nuevo_"+parts[1]));
+				
+				//String dato_actual   = ((requestBody.get("actual_"+parts[1]) != null) ? requestBody.get("actual_"+parts[1]).toString() : "" );
+				//String dato_corregir = ((requestBody.get("nuevo_"+parts[1]) != null) ? requestBody.get("nuevo_"+parts[1]).toString() : "" );
+
+    			this.solicitudService.saveTramiteDetalle(tramite_id, "actual_"+parts[1], dato_actual);
+    			this.solicitudService.saveTramiteDetalle(tramite_id, "nuevo_"+parts[1], dato_corregir);
+    		}   		
+    	});
+    	
 		return savedSolicitud;
 	}
 	
@@ -366,15 +429,6 @@ public class SolicitudRestController {
 		
 	}
 
-	/*
-	@PostMapping("/saneoCambioBandeja")
-	public Solicitud saneoCambioBandeja(@RequestBody Map<String, Object> requestBody) {
-		
-		System.out.println(requestBody);
-		
-		return new Solicitud();
-	}
-	*/
 	
 	@PostMapping("/verificaSiTieneTramatiesEnviados")
 	public List<Map<String, Object>> verificaSiTieneTramatiesEnviados(@RequestBody Map<String, Object> requestBody) {
@@ -438,9 +492,11 @@ public class SolicitudRestController {
 		//**************** PARA EL SOLICITUD ****************
 		Solicitud newsolicitud =  new Solicitud();
 		newsolicitud.setFormulario(formBuscado);
+		newsolicitud.setUsuario_creador(usuarioSolicitante.getId().toString());
 		newsolicitud.setUsuarioSolicitante(usuarioSolicitante);
 		Instant instant = new Date().toInstant();
 		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+		newsolicitud.setFechaCreacion(localDateTime);
 		newsolicitud.setFechaSolicitud(localDateTime);
 		newsolicitud.setTabla_id(ex.getId().toString());
 		newsolicitud.setSistema(tipoSistema);

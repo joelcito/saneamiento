@@ -1,11 +1,13 @@
 package com.saneamiento.controllers;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +35,8 @@ public class RolRestController {
 	
 	@GetMapping("/listado")
 	public List<Rol> listado() {
-		return this.rolService.findAll();
+		//return this.rolService.findAll();
+		return this.rolService.listadoRolVigentes();
 	}
 	
 	@PostMapping("/")
@@ -41,7 +44,9 @@ public class RolRestController {
 		Rol newRol = new Rol();
 		newRol.setNombre(requestBody.get("nombre").toString());
 		//String datosMenus = "[{\"name\":\"Home\",\"icon\":\"home\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Home\",\"url\":\"home\",\"active\":true}]},{\"name\":\"Usuario\",\"icon\":\"person\",\"route\":\"/profile\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Usuarios\",\"url\":\"usuario\",\"active\":true},{\"name\":\"Listado Rol\",\"url\":\"rol\",\"active\":true}]},{\"name\":\"Tipo Saneo\",\"icon\":\"find_in_page\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Tipo Saneo\",\"url\":\"tipo_saneo\",\"active\":true}]}]";
-		String datosMenus = "[{\"name\":\"Home\",\"icon\":\"home\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Listado\",\"url\":\"home\",\"active\":true}]},{\"name\":\"Usuario\",\"icon\":\"person\",\"route\":\"/profile\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Usuarios\",\"url\":\"usuario\",\"active\":true},{\"name\":\"Listado Rol\",\"url\":\"rol\",\"active\":true}]},{\"name\":\"Solicitud\",\"icon\":\"find_in_page\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Solicitud\",\"url\":\"solicitud\",\"active\":true}]},{\"name\":\"Administracion\",\"icon\":\"compass_calibration\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Tipo Saneo\",\"url\":\"tipo_saneo\",\"active\":true},{\"name\":\"Formulario\",\"url\":\"formulario\",\"active\":true}]}]";
+		//String datosMenus = "[{\"name\":\"Home\",\"icon\":\"home\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Listado\",\"url\":\"home\",\"active\":true}]},{\"name\":\"Usuario\",\"icon\":\"person\",\"route\":\"/profile\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Usuarios\",\"url\":\"usuario\",\"active\":true},{\"name\":\"Listado Rol\",\"url\":\"rol\",\"active\":true}]},{\"name\":\"Solicitud\",\"icon\":\"find_in_page\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Solicitud\",\"url\":\"solicitud\",\"active\":true}]},{\"name\":\"Administracion\",\"icon\":\"compass_calibration\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Tipo Saneo\",\"url\":\"tipo_saneo\",\"active\":true},{\"name\":\"Formulario\",\"url\":\"formulario\",\"active\":true}]}]";
+		String datosMenus = "[{\"name\":\"Home\",\"icon\":\"home\",\"route\":\"/home\",\"active\":false,\"subMenus\":[{\"name\":\"Listado\",\"url\":\"home\",\"active\":false}]},{\"name\":\"Usuario\",\"icon\":\"person\",\"route\":\"/profile\",\"active\":false,\"subMenus\":[{\"name\":\"Listado Usuarios\",\"url\":\"usuario\",\"active\":false},{\"name\":\"Listado Rol\",\"url\":\"rol\",\"active\":false}]},{\"name\":\"Solicitud\",\"icon\":\"find_in_page\",\"route\":\"/home\",\"active\":true,\"subMenus\":[{\"name\":\"Listado Solicitud\",\"url\":\"solicitud\",\"active\":false},{\"name\":\"Listado Asignacion\",\"url\":\"asignacion\",\"active\":true}]},{\"name\":\"Administracion\",\"icon\":\"compass_calibration\",\"route\":\"/home\",\"active\":false,\"subMenus\":[{\"name\":\"Tipo Saneo\",\"url\":\"tipo_saneo\",\"active\":false},{\"name\":\"Formulario\",\"url\":\"formulario\",\"active\":false}]}]";
+		
 		newRol.setMenus(datosMenus);
 		return this.rolService.save(newRol);
 	}
@@ -91,5 +96,11 @@ public class RolRestController {
 		}	
 		
 		return rolBuscado ;
+	}
+	
+	@DeleteMapping("/deleteRol/{id}")
+	private int deleteRol(@PathVariable Long id) {
+		LocalDateTime fechaYHoraActual = LocalDateTime.now();
+		return this.rolService.deleteUsuario(id, fechaYHoraActual);
 	}
 }

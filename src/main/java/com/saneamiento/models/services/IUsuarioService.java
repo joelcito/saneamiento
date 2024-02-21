@@ -1,5 +1,6 @@
 package com.saneamiento.models.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.saneamiento.models.entity.Rol;
@@ -11,11 +12,15 @@ public interface IUsuarioService {
 	//******** USUARIO ********
 	public List<Usuario> findAll();
 	
+	public List<Usuario> listadoUsuarioVigentes();
+	
 	public Usuario findById(Long id);
 	
 	public Usuario save(Usuario usuario);
 	
 	public List<UsuarioRol> getRolesUser(Usuario usuario);
+	
+	int deleteUsuario(Long id, LocalDateTime date);
 	
 	
 	//******** USUARIO ROL ********

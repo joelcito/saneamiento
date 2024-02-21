@@ -1,5 +1,6 @@
 package com.saneamiento.models.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.saneamiento.models.entity.DetalleTipoSaneo;
@@ -12,6 +13,11 @@ public interface ITipoSaneoService {
 	public List<TipoSaneo> findAll();
 	public TipoSaneo findById(Long id);	
 	public TipoSaneo save(TipoSaneo tipoSaneo);
+	
+	int deleteTipoSaneo(Long id, LocalDateTime fecha);	
+	public List<TipoSaneo> listadoRolVigentes();
+	
+	
 	
 	// ***************** DETALLE TIPO SANEO *****************
 	public DetalleTipoSaneo findByIdDetalleTipoSaneo(Long detalle_tipo_saneo_id);

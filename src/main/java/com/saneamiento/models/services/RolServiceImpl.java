@@ -1,5 +1,6 @@
 package com.saneamiento.models.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,18 @@ public class RolServiceImpl implements IRolService{
 	@Transactional
 	public Rol save(Rol rol) {
 		return this.rolDao.save(rol);
+	}
+
+	@Override
+	@Transactional
+	public int deleteUsuario(Long id, LocalDateTime fecha) {
+		return this.rolDao.deleteUsuario(id, fecha);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Rol> listadoRolVigentes() {
+		return this.rolDao.listadoRolVigentes();
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.saneamiento.models.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,18 @@ public class TipoSaneoServiceImpl implements ITipoSaneoService{
 	@Transactional(readOnly = true)
 	public List<TipoDetalleTipoSaneo> getTiposDetallesTipoSaneo() {
 		return this.tipoSaneoDao.getTiposDetallesTipoSaneo();
+	}
+
+	@Override
+	@Transactional
+	public int deleteTipoSaneo(Long id, LocalDateTime fecha) {
+		return this.tipoSaneoDao.deleteTipoSaneo(id, fecha);	
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<TipoSaneo> listadoRolVigentes() {
+		return this.tipoSaneoDao.listadoRolVigentes();
 	}
 
 }
