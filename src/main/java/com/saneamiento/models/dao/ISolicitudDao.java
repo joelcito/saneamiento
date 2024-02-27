@@ -1,6 +1,7 @@
 package com.saneamiento.models.dao;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Solicitud;
+import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 
 public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
@@ -33,7 +35,8 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
 	
 	//**************** TABLA EXTRANJENRIA ****************	
-	@Query(value = "SELECT * "
+	//@Query(value = "SELECT * "
+	@Query(value = "SELECT * , s.id as id_solicitud, s.estado as estado_solucitud "
 				+ "FROM solicitud s INNER JOIN extranjeria e "
 				+ "ON CAST(s.tabla_id AS BIGINT) = e.id INNER JOIN usuario u "
 				+ "ON s.solicitante_id = u.id "
@@ -83,7 +86,27 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 
 	@Modifying
     @Query("UPDATE Regla r SET r.asignacion = :asignacion WHERE r.id = :id")
-    int updateReglaAsignacion(@Param("asignacion") String asignacion, @Param("id") Long id);
-
+    int updateReglaAsignacion(@Param("asignacion") String asignacion, @Param("id") Long id);		
 	
+	
+	//***************** PARA LA TABLA DE TEMPORALES DE LA SOLICITUD *****************
+	@Modifying
+	@Query(value ="INSERT INTO temporal_solicitud (campo, dato_actual, respuesta, solicitud_id, fecha_creacion, usuario_creador) VALUES (:campo, :dato_actual, :respuesta, :solicitud, :fechaCreacion, :usuario_creador)", nativeQuery = true)
+	public int saveTemporalSolicitud(@Param("campo") String campo, @Param("dato_actual") String dato_actual, @Param("respuesta") String respuesta, @Param("solicitud") Long solicitud, @Param("fechaCreacion") LocalDateTime fechaCreacion, @Param("usuario_creador") String usuario_creador);
+	
+	//@Query("SELECT ts FROM TemporalSolicitud ts WHERE ts.campo = :campo AND ts.dato_actual = :dato_actual AND ts.respuesta = :respuesta AND ts.solicitud.id = :solicitud_id AND ts.fechaEliminacion = NULL")
+	@Query("SELECT ts FROM TemporalSolicitud ts WHERE ts.campo = :campo AND ts.dato_actual = :dato_actual AND ts.respuesta = :respuesta AND ts.solicitud.id = :solicitud_id AND ts.fechaEliminacion is NULL")
+	public List<TemporalSolicitud> listadoTemporalSolicitud(@Param("campo") String campo, @Param("dato_actual") String dato_actual, @Param("respuesta") String respuesta, @Param("solicitud_id") Long solicitud_id);
+	
+	@Modifying
+	@Query("UPDATE TemporalSolicitud ts SET ts.fechaEliminacion = :fechaEliminacion, ts.UsuarioEliminador = :UsuarioEliminador WHERE (ts.solicitud.id = :solicitud_id AND ts.campo = :campo ) AND ts.respuesta != :respuesta")
+	public int eliminacionLogicaTemporalSolicitud(@Param("fechaEliminacion") LocalDateTime fechaEliminacion, @Param("UsuarioEliminador") String UsuarioEliminador, @Param("solicitud_id") Long solicitud_id, @Param("campo") String campo, @Param("respuesta") String respuesta);
+	
+	@Modifying
+	@Query("UPDATE TemporalSolicitud ts SET ts.fechaEliminacion = :fechaEliminacion, ts.UsuarioEliminador = :UsuarioEliminador WHERE ts.solicitud.id = :solicitud_id AND ts.campo = :campo AND ts.fechaEliminacion is null")
+	public int eliminacionLogicaTemporalSolicitudDeseleccion(@Param("fechaEliminacion") LocalDateTime fechaEliminacion, @Param("UsuarioEliminador") String UsuarioEliminador, @Param("solicitud_id") Long solicitud_id, @Param("campo") String campo);
+		
+	@Query("SELECT ts FROM TemporalSolicitud ts WHERE ts.solicitud.id = :solicitud_id AND ts.fechaEliminacion is null")
+	public List<TemporalSolicitud> getTemporalesByIdSolicitud(@Param("solicitud_id") Long solicitud_id);	
+		
 }

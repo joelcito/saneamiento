@@ -26,13 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Formulario;
 import com.saneamiento.models.entity.Solicitud;
+import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 import com.saneamiento.models.entity.Usuario;
 import com.saneamiento.models.services.IFormularioService;
 import com.saneamiento.models.services.ISolicitudService;
 import com.saneamiento.models.services.IUsuarioService;
-
-
 
 @RestController
 @RequestMapping("/api/solicitud")
@@ -94,10 +93,13 @@ public class SolicitudRestController {
 		//return this.solicitudService.findById(id);
 	}
 	
-	@PostMapping("/")
-	public Solicitud save(@RequestBody Map<String, Object> requestbody) {
-		//System.out.println(requestbody);
-		String serialExtRegistros =  requestbody.get("serialExtRegistros").toString();
+	
+	@PostMapping("/saveSolicitudTemporal")
+	public Solicitud saveSolicitudTemporal(@RequestBody Map<String, Object> requestbody) {
+
+		String serialExtRegistros = requestbody.get("serialExtRegistros").toString();
+		String estado             = requestbody.get("estado").toString();
+		
 		Extranjeria ex =  this.solicitudService.buscaSerialExtranjero(serialExtRegistros);		
 				
 		if(ex == null) {			
@@ -107,14 +109,106 @@ public class SolicitudRestController {
 			ex =  this.solicitudService.buscaSerialExtranjero(serialExtRegistros);
 		}
 		
-		Long formulario_id = Long.parseLong(requestbody.get("formulario_id").toString());
+		Long formulario_id 		= Long.parseLong(requestbody.get("formulario_id").toString());
 		Formulario formBuscado 	= this.formularioService.findById(formulario_id);
 		
-		Long solicitante_id = Long.parseLong(requestbody.get("funcionario_id").toString());
+		Long solicitante_id 		= Long.parseLong(requestbody.get("funcionario_id").toString());
 		Usuario usuarioSolicitante  =  this.usuarioService.findById(solicitante_id);
 		
 		Long tipo_solicitud_id = Long.parseLong(requestbody.get("tipo_solicitud").toString());
+
+		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
+		Long solicitud_id 		= 0L;
+		String tipoSistema 		= "extranjeria";
+		Solicitud newsolicitud 	= generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
+		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
+
+		Solicitud solicitudGuardada = this.solicitudService.save(newsolicitud);
+		Long      newSolicitudId    = solicitudGuardada.getId();
 		
+		//**************** PARA EL TRAMITE ****************
+		this.solicitudService.saveTramite(tipo_solicitud_id, newSolicitudId);
+		//Tramite tramiteBuscado = this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
+		this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
+	
+		return solicitudGuardada;
+		// return new Solicitud();
+	}
+	
+	@PostMapping("/saveTemporalSolicitud")
+	public TemporalSolicitud saveTemporalSolicitud(@RequestBody Map<String, Object> requestBody) {
+		
+		//System.out.println(requestBody);
+		
+		Long solicitud_id 		= Long.parseLong(requestBody.get("solicitud_id").toString());
+		String campoModificado 	= (requestBody.get("campoModificado") == null)? "" 	: requestBody.get("campoModificado").toString();
+		String datoActual 		= (requestBody.get("datoActual") == null)? "" 		: requestBody.get("datoActual").toString();
+		String datoRespuesta 	= (requestBody.get("datoRespuesta") == null)? "" 	: requestBody.get("datoRespuesta").toString();
+		String usuario_id		= (requestBody.get("funcionario_id") == null)? "" 	: requestBody.get("funcionario_id").toString();
+		
+		//System.out.println(solicitud_id);
+		//System.out.println(campoModificado);
+		//System.out.println(datoActual);
+		//System.out.println(datoRespuesta);
+		//System.out.println(usuario_id);
+		
+		List<TemporalSolicitud> lsiatdo = this.solicitudService.listadoTemporalSolicitud(campoModificado, datoActual, datoRespuesta, solicitud_id);
+		
+		//System.out.println(lsiatdo.size());		
+
+		Instant instant = new Date().toInstant();
+		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+		
+		if(lsiatdo.size() == 0) {
+			this.solicitudService.saveTemporalSolicitud(campoModificado, datoActual, datoRespuesta, solicitud_id, localDateTime, usuario_id);
+		}
+		
+		this.solicitudService.eliminacionLogicaTemporalSolicitud(localDateTime, usuario_id, solicitud_id, campoModificado, datoRespuesta);
+		
+		return new TemporalSolicitud();
+	}
+	
+	@PostMapping("/eliminacionLogicaTemporalSolicitudDeseleccion")
+	public int eliminacionLogicaTemporalSolicitudDeseleccion(@RequestBody Map<String, Object> requestBody) {
+		
+		Instant instant = new Date().toInstant();
+		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+				
+		String nombreCampo 			= requestBody.get("nombreCampo").toString();
+		String UsuarioEliminador 	= requestBody.get("usarioEliminador").toString();
+		Long solicitud_id 			= Long.parseLong(requestBody.get("solicitud_id").toString());
+		
+		return this.solicitudService.eliminacionLogicaTemporalSolicitudDeseleccion(localDateTime, UsuarioEliminador, solicitud_id, nombreCampo);
+	}
+	
+	@GetMapping("/getTemporalesByIdSolicitud/{solicitud_id}")
+	public List<TemporalSolicitud> getTemporalesByIdSolicitud(@PathVariable Long solicitud_id){
+		return this.solicitudService.getTemporalesByIdSolicitud(solicitud_id);
+	}
+	
+	@PostMapping("/")
+	public Solicitud save(@RequestBody Map<String, Object> requestbody) {
+		//System.out.println(requestbody);
+		String      serialExtRegistros = requestbody.get("serialExtRegistros").toString();
+		Extranjeria ex                 = this.solicitudService.buscaSerialExtranjero(serialExtRegistros);
+				
+		if(ex == null) {			
+			String serialDocumentoExtRegistros = requestbody.get("serialDocumentoExtRegistros").toString();
+			String nroCedulaBolExtRegistros    = requestbody.get("nroCedulaBolExtRegistros").toString();
+			this.solicitudService.saveExtranjeria(serialExtRegistros, serialDocumentoExtRegistros, nroCedulaBolExtRegistros);
+			ex =  this.solicitudService.buscaSerialExtranjero(serialExtRegistros);
+		}
+		
+		Long       formulario_id 	= Long.parseLong(requestbody.get("formulario_id").toString());
+		Formulario formBuscado   	= this.formularioService.findById(formulario_id);
+		
+		Long    solicitante_id     	= Long.parseLong(requestbody.get("funcionario_id").toString());
+		Usuario usuarioSolicitante 	= this.usuarioService.findById(solicitante_id);
+		
+		Long tipo_solicitud_id 		= Long.parseLong(requestbody.get("tipo_solicitud").toString());
+		
+		String estado 				= requestbody.get("estado").toString();
+		Long solicitud_id 			= Long.parseLong(requestbody.get("solicitud_id").toString());
 		
 		// //**************** PARA EL SOLICITUD ****************
 		// Solicitud newsolicitud =  new Solicitud();
@@ -250,11 +344,8 @@ public class SolicitudRestController {
 		
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		String tipoSistema = "extranjeria";
-		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema);
+			Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
 		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
-        
-        
-     
 		
 		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
 		Long newSolicitudId = savedSolicitud.getId();
@@ -306,10 +397,13 @@ public class SolicitudRestController {
 		Usuario usuarioSolicitante = this.usuarioService.findById(solicitante_id);
 		
 		Long tipo_solicitud_id = Long.parseLong(requestbody.get("tipo_solicitud").toString());
-
+		
+		String estado 				= requestbody.get("estado").toString();
+		Long solicitud_id 			= Long.parseLong(requestbody.get("solicitud_id").toString());
+		
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		String    tipoSistema  = "extranjeria";
-		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema);
+		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
 		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 
 		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
@@ -341,6 +435,7 @@ public class SolicitudRestController {
 	public  Solicitud saveCorreccionesCIE(@RequestBody Map<String, Object> requestBody) {
 				
 		String serialExtRegistros 	= requestBody.get("serialExtRegistros").toString();
+				
 		Extranjeria ex 				= this.solicitudService.buscaSerialExtranjero(serialExtRegistros);	
 		
 		if(ex == null) {			
@@ -350,25 +445,30 @@ public class SolicitudRestController {
 			ex = this.solicitudService.buscaSerialExtranjero(serialExtRegistros);
 		}
 		
-		Long       formulario_id = Long.parseLong(requestBody.get("formulario_id").toString());
-		Formulario formBuscado   = this.formularioService.findById(formulario_id);
+		Long       formulario_id 	= Long.parseLong(requestBody.get("formulario_id").toString());
+		Formulario formBuscado   	= this.formularioService.findById(formulario_id);
 		
-		Long    solicitante_id     = Long.parseLong(requestBody.get("funcionario_id").toString());
-		Usuario usuarioSolicitante = this.usuarioService.findById(solicitante_id);
+		Long    solicitante_id     	= Long.parseLong(requestBody.get("funcionario_id").toString());
+		Usuario usuarioSolicitante 	= this.usuarioService.findById(solicitante_id);
 		
-		Long tipo_solicitud_id = Long.parseLong(requestBody.get("tipo_solicitud").toString());
+		Long tipo_solicitud_id 		= Long.parseLong(requestBody.get("tipo_solicitud").toString());
+		
+		String estado 				= requestBody.get("estado").toString();
+		Long solicitud_id 			= Long.parseLong(requestBody.get("solicitud_id").toString());
 		
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		String    tipoSistema  = "extranjeria";
-		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema);
+		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
 		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		
 		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
 		Long      newSolicitudId = savedSolicitud.getId();
+		this.solicitudService.save(generaCodigoSolicitud(savedSolicitud, tipoSistema));
 		
 		this.solicitudService.saveTramite(tipo_solicitud_id, newSolicitudId);
 		Tramite tramiteBuscado 		= this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
 		Long tramite_id 			= tramiteBuscado.getId();
+		
 		
 		//**************** PARA EL TRAMITE DETALLE****************
     	requestBody.forEach((key, valor) -> {
@@ -380,22 +480,14 @@ public class SolicitudRestController {
     			System.out.println(parts[1]);
     			String dato_actual   = ((requestBody.get("actual_"+parts[1]) != null) ? requestBody.get("actual_"+parts[1]).toString() : "" );
     			String dato_corregir = "";
-    			if(parts[1].contains("Fec")) {
-    				
+    			if(parts[1].contains("Fec")) {    				
     				String fechaEnFormatoOriginal = requestBody.get("nuevo_"+parts[1]).toString();
     				LocalDate fecha = LocalDate.parse(fechaEnFormatoOriginal);
-    				//dato_corregir = fecha.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     				dato_corregir = fecha.format(DateTimeFormatter.ofPattern("d/M/yyyy"));
 
     			}else {
     				dato_corregir = ((requestBody.get("nuevo_"+parts[1]) != null) ? requestBody.get("nuevo_"+parts[1]).toString() : "" );	
     			}
-    			//System.out.println(requestBody.get("actual_"+parts[1]));
-    			//System.out.println(requestBody.get("nuevo_"+parts[1]));
-				
-				//String dato_actual   = ((requestBody.get("actual_"+parts[1]) != null) ? requestBody.get("actual_"+parts[1]).toString() : "" );
-				//String dato_corregir = ((requestBody.get("nuevo_"+parts[1]) != null) ? requestBody.get("nuevo_"+parts[1]).toString() : "" );
-
     			this.solicitudService.saveTramiteDetalle(tramite_id, "actual_"+parts[1], dato_actual);
     			this.solicitudService.saveTramiteDetalle(tramite_id, "nuevo_"+parts[1], dato_corregir);
     		}   		
@@ -444,7 +536,19 @@ public class SolicitudRestController {
 	
 
 	// ******************** FUNCIONES PRIVADAS ********************
-	// Función privada para asignar usuario según reglas
+
+	private Solicitud generaCodigoSolicitud(Solicitud solicitud, String sistema){
+		String cod          = "";
+		Long   solicitud_id = solicitud.getId();
+		
+		if(sistema.equals("extranjeria"))
+			cod = "UNBD-E-"+solicitud_id;
+		
+		solicitud.setCodigo(cod);
+		return solicitud;
+	}
+
+
     private Solicitud asignarUsuarioSegunReglas(List<Map<String, Object>> listaReglas , Boolean swIerable, Solicitud newsolicitud) {
     	
     	System.out.println(listaReglas.size());
@@ -472,7 +576,7 @@ public class SolicitudRestController {
 			Usuario usuAsiganado = this.usuarioService.findById(usuario_regla_id);
 			newsolicitud.setUsuarioAsignado(usuAsiganado);    			
 			//swIerable =  false;
-			Long regla_id = Long.parseLong(primeroLista.get("id").toString());    			
+			//Long regla_id = Long.parseLong(primeroLista.get("id").toString());    			
 			for (Map<String, Object> r : listaReglas) {
 				if(!(r.get("id").equals(primeroLista.get("id").toString()))) {
 					Long aCerear = Long.parseLong(r.get("id").toString());
@@ -486,52 +590,55 @@ public class SolicitudRestController {
        	}
     	return newsolicitud;
     }
-
     
-    private Solicitud generaSolicitud(Formulario formBuscado, Usuario usuarioSolicitante, Extranjeria ex, String tipoSistema) {
+	private Solicitud generaSolicitud(Formulario formBuscado, Usuario usuarioSolicitante, Extranjeria ex, String tipoSistema, String estado, Long solicitud_id) {
+
 		//**************** PARA EL SOLICITUD ****************
-		Solicitud newsolicitud =  new Solicitud();
+		Solicitud newsolicitud = (estado.equals("ASIGNADO") && solicitud_id != 0)?  this.solicitudService.findById(solicitud_id) : new Solicitud();
+
+		// Solicitud newsolicitud =  new Solicitud();
 		newsolicitud.setFormulario(formBuscado);
 		newsolicitud.setUsuario_creador(usuarioSolicitante.getId().toString());
 		newsolicitud.setUsuarioSolicitante(usuarioSolicitante);
-		Instant instant = new Date().toInstant();
+		Instant       instant       = new Date().toInstant();
 		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
 		newsolicitud.setFechaCreacion(localDateTime);
 		newsolicitud.setFechaSolicitud(localDateTime);
 		newsolicitud.setTabla_id(ex.getId().toString());
 		newsolicitud.setSistema(tipoSistema);
-		newsolicitud.setEstado("ASIGNADO");
-		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION ********************************
-		LocalDate fecha = localDateTime.toLocalDate();
-		LocalTime hora = localDateTime.toLocalTime();	
-
-
-		Boolean swIerable = true;
-		List<Map<String, Object>> listaReglas = this.solicitudService.getReglasVigentes(hora.toString(), fecha, fecha);
-
-		// System.out.println("********************************");
-		// System.out.println(fecha);
-		// System.out.println(hora);
-		// System.out.println(listaReglas.size());
-		// System.out.println("********************************");
-
+		newsolicitud.setEstado(estado);	
 		
-		if(listaReglas.size() > 0){
-			newsolicitud = asignarUsuarioSegunReglas(listaReglas, swIerable, newsolicitud);
-		}else{
-			LocalTime limiteInicioTarde 	= LocalTime.of(12, 0, 0);
-			LocalTime limiteFinTarde 		= LocalTime.of(23, 59, 59);
-			if ( (hora.isAfter(limiteInicioTarde) && hora.isBefore(limiteFinTarde)) ||  (hora.equals(limiteInicioTarde) || hora.equals(limiteFinTarde))) {
-				LocalDate fechaSiguiente = fecha.plusDays(1);
-							hora           = LocalTime.of(7, 31, 59);
-							listaReglas    = this.solicitudService.getReglasVigentes(hora.toString(), fechaSiguiente, fechaSiguiente);
-							newsolicitud   = asignarUsuarioSegunReglas(listaReglas, swIerable, newsolicitud);
-			}else{
-				hora         = LocalTime.of(7, 31, 59);
-				listaReglas  = this.solicitudService.getReglasVigentes(hora.toString(), fecha, fecha);
+		if(estado.equals("ASIGNADO")) {
+			
+			// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION ********************************
+			LocalDate fecha = localDateTime.toLocalDate();
+			LocalTime hora  = localDateTime.toLocalTime();
+			
+			Boolean swIerable = true;
+			List<Map<String, Object>> listaReglas = this.solicitudService.getReglasVigentes(hora.toString(), fecha, fecha);
+			
+			if(listaReglas.size() > 0){
 				newsolicitud = asignarUsuarioSegunReglas(listaReglas, swIerable, newsolicitud);
-			}
+			}else{
+				LocalTime limiteInicioTarde 	= LocalTime.of(12, 0, 0);
+				LocalTime limiteFinTarde 		= LocalTime.of(23, 59, 59);
+				if ( (hora.isAfter(limiteInicioTarde) && hora.isBefore(limiteFinTarde)) ||  (hora.equals(limiteInicioTarde) || hora.equals(limiteFinTarde))) {
+					LocalDate fechaSiguiente = fecha.plusDays(1);
+								hora           = LocalTime.of(7, 31, 59);
+								listaReglas    = this.solicitudService.getReglasVigentes(hora.toString(), fechaSiguiente, fechaSiguiente);
+								newsolicitud   = asignarUsuarioSegunReglas(listaReglas, swIerable, newsolicitud);
+				}else{
+					hora         = LocalTime.of(7, 31, 59);
+					listaReglas  = this.solicitudService.getReglasVigentes(hora.toString(), fecha, fecha);
+					newsolicitud = asignarUsuarioSegunReglas(listaReglas, swIerable, newsolicitud);
+				}
+			}	
+			
+		}else {
+			
 		}
+				
 		return newsolicitud;
+		
     }
 }

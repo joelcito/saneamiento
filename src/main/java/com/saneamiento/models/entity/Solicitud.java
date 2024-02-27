@@ -3,14 +3,13 @@ package com.saneamiento.models.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.BatchSize;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -60,6 +59,8 @@ public class Solicitud implements Serializable {
 	private String tabla_id;
 	
 	private String sistema;
+	
+	private String codigo;
 	
 	@Column(length = 15)
 	private String estado;

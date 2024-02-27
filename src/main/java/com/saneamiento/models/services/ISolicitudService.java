@@ -1,10 +1,15 @@
 package com.saneamiento.models.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.repository.query.Param;
+
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Solicitud;
+import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 
 public interface ISolicitudService {
@@ -42,5 +47,16 @@ public interface ISolicitudService {
 	public int updateReglaAsignacion(String asignacion,Long id);
 	
 	
+	//***************** PARA LA TABLA DE TEMPORALES DE LA SOLICITUD *****************
+	//public int saveTemporalSolicitud(String campo, String respuesta, Solicitud solicitud, LocalDateTime fechaCreacion);
+	public int saveTemporalSolicitud(String campo, String dato_actual, String respuesta, Long solicitud, LocalDateTime fechaCreacion, String usuario_creador);
 	
+	public List<TemporalSolicitud> listadoTemporalSolicitud(String campo, String dato_actual, String respuesta, Long solicitud_id);
+	
+	public int eliminacionLogicaTemporalSolicitud(LocalDateTime fechaEliminacion,String UsuarioEliminador,Long solicitud_id,String campo, String respuesta);
+	
+	public int eliminacionLogicaTemporalSolicitudDeseleccion(LocalDateTime fechaEliminacion,String UsuarioEliminador,Long solicitud_id,String campo);
+	
+	public List<TemporalSolicitud> getTemporalesByIdSolicitud(Long solicitud_id);
+		
 }

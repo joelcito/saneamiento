@@ -1,6 +1,7 @@
 package com.saneamiento.models.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.saneamiento.models.dao.ISolicitudDao;
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Solicitud;
+import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 
 @Service
@@ -116,5 +118,39 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	@Transactional
 	public int updateReglaAsignacion(String asignacion, Long id) {
 		return this.solicitudDao.updateReglaAsignacion(asignacion, id);
+	}
+
+	//***************** PARA LA TABLA DE TEMPORALES DE LA SOLICITUD *****************
+	@Override
+	@Transactional
+	//public int saveTemporalSolicitud(String campo, String respuesta, Solicitud solicitud, LocalDateTime fechaCreacion) {
+	public int saveTemporalSolicitud(String campo, String dato_actual, String respuesta, Long solicitud, LocalDateTime fechaCreacion, String usuario_creador) {
+		return this.solicitudDao.saveTemporalSolicitud(campo, dato_actual, respuesta, solicitud, fechaCreacion, usuario_creador);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<TemporalSolicitud> listadoTemporalSolicitud(String campo, String dato_actual, String respuesta,Long solicitud_id) {
+		return this.solicitudDao.listadoTemporalSolicitud(campo, dato_actual, respuesta, solicitud_id);
+	}
+
+
+	@Override
+	@Transactional
+	public int eliminacionLogicaTemporalSolicitud(LocalDateTime fechaEliminacion, String UsuarioEliminador,Long solicitud_id, String campo, String respuesta) {
+		return this.solicitudDao.eliminacionLogicaTemporalSolicitud(fechaEliminacion, UsuarioEliminador, solicitud_id, campo, respuesta);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<TemporalSolicitud> getTemporalesByIdSolicitud(Long solicitud_id) {
+		return this.solicitudDao.getTemporalesByIdSolicitud(solicitud_id);
+	}
+
+
+	@Override
+	@Transactional
+	public int eliminacionLogicaTemporalSolicitudDeseleccion(LocalDateTime fechaEliminacion, String UsuarioEliminador, Long solicitud_id, String campo) {
+		return this.solicitudDao.eliminacionLogicaTemporalSolicitudDeseleccion(fechaEliminacion, UsuarioEliminador, solicitud_id, campo);
 	}
 }

@@ -19,10 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.saneamiento.models.entity.Formulario;
 import com.saneamiento.models.entity.FormularioPregunta;
 import com.saneamiento.models.entity.TipoSaneo;
-import com.saneamiento.models.entity.Usuario;
 import com.saneamiento.models.services.IFormularioService;
 import com.saneamiento.models.services.ITipoSaneoService;
-import com.saneamiento.models.services.IUsuarioService;
 
 @RestController
 @RequestMapping("/api/formulario")
@@ -33,10 +31,7 @@ public class FormularioRestController {
 	
 	@Autowired
 	private ITipoSaneoService tipoSaneoService;
-	
-	@Autowired
-	private IUsuarioService usuarioService;
-	
+		
 	@GetMapping("/listado")
 	private List<Formulario> name() {
 		return this.formularioService.findAll();
