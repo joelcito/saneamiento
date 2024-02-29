@@ -22,7 +22,6 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	private ISolicitudDao solicitudDao;
 	
 	@Override
-	//@Transactional(readOnly = true)
 	@Transactional
 	public List<Solicitud> listadoSolicitudesAsignados(Long usuario_asignado_id) {
 		return this.solicitudDao.listadoSolicitudesAsignados(usuario_asignado_id);

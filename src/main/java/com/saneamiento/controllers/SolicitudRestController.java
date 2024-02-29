@@ -35,7 +35,7 @@ import com.saneamiento.models.services.IUsuarioService;
 
 @RestController
 @RequestMapping("/api/solicitud")
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200"}) 
 public class SolicitudRestController {
 
 	@Autowired
@@ -47,7 +47,6 @@ public class SolicitudRestController {
 	@Autowired
 	private IUsuarioService usuarioService;
 	
-	//@GetMapping("/listado")
 	@PostMapping("/listado")
 	public List<Solicitud> listado(@RequestBody Map<String, Object> requestBody){
 		Long user_id = Long.parseLong(requestBody.get("id").toString());
@@ -350,6 +349,9 @@ public class SolicitudRestController {
 		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
 		Long newSolicitudId = savedSolicitud.getId();
 		
+		
+		
+		
 		//**************** PARA EL TRAMITE ****************
 		this.solicitudService.saveTramite(tipo_solicitud_id, newSolicitudId);
 		Tramite tramiteBuscado = this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
@@ -607,7 +609,7 @@ public class SolicitudRestController {
 		newsolicitud.setTabla_id(ex.getId().toString());
 		newsolicitud.setSistema(tipoSistema);
 		newsolicitud.setEstado(estado);	
-		
+				
 		if(estado.equals("ASIGNADO")) {
 			
 			// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION ********************************
