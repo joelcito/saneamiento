@@ -16,7 +16,7 @@ import com.saneamiento.models.services.ComunServiceImpl;
 
 @RestController
 @RequestMapping("/api/comun")
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "*"})
 public class ComunRestController {
 	
 	@Autowired

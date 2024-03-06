@@ -16,7 +16,7 @@ import com.saneamiento.models.services.RuiSegipServiceImpl;
 
 @RestController
 @RequestMapping("/api/extranjeria")
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "*"})
 public class ExtranjeriaRestController {
 
 	@Autowired

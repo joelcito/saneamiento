@@ -24,7 +24,7 @@ import com.saneamiento.models.services.ITipoSaneoService;
 
 @RestController
 @RequestMapping("/api/tipoSaneos")
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "*"})
 public class TipoSaneoRestController {
 	
 	@Autowired

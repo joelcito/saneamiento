@@ -24,7 +24,7 @@ import com.saneamiento.models.services.IUsuarioService;
 
 @RestController
 @RequestMapping("/api/rol")
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "*"})
 public class RolRestController {
 	
 	@Autowired

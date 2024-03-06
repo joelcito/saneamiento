@@ -35,7 +35,7 @@ import com.saneamiento.models.services.IUsuarioService;
 
 @RestController
 @RequestMapping("/api/solicitud")
-@CrossOrigin(origins = {"http://localhost:4200"}) 
+@CrossOrigin(origins = {"http://localhost:4200", "*"}) 
 public class SolicitudRestController {
 
 	@Autowired
@@ -478,8 +478,8 @@ public class SolicitudRestController {
 				
     			String[] parts = key.split("_");
     			
-    			System.out.println("*****************************");
-    			System.out.println(parts[1]);
+    			//System.out.println("*****************************");
+    			//System.out.println(parts[1]);
     			String dato_actual   = ((requestBody.get("actual_"+parts[1]) != null) ? requestBody.get("actual_"+parts[1]).toString() : "" );
     			String dato_corregir = "";
     			if(parts[1].contains("Fec")) {    				
@@ -497,6 +497,68 @@ public class SolicitudRestController {
     	
 		return savedSolicitud;
 	}
+	
+	
+	@PostMapping("/saveSolicitudBajaOrpeNaturalizacion")
+	public Solicitud saveSolicitudBajaOrpeNaturalizacion(@RequestBody Map<String, Object> requestBody) {
+		
+		System.out.println(requestBody);
+		
+		
+		String serialExtRegistros 	= requestBody.get("serialExtRegistros").toString();
+		
+		Extranjeria ex 				= this.solicitudService.buscaSerialExtranjero(serialExtRegistros);	
+		
+		if(ex == null) {			
+			String serialDocumentoExtRegistros = requestBody.get("serialDocumentoExtRegistros").toString();
+			String nroCedulaBolExtRegistros    = requestBody.get("nroCedulaBolExtRegistros").toString();
+			this.solicitudService.saveExtranjeria(serialExtRegistros, serialDocumentoExtRegistros, nroCedulaBolExtRegistros);
+			ex = this.solicitudService.buscaSerialExtranjero(serialExtRegistros);
+		}	
+		
+		Long       formulario_id 	= Long.parseLong(requestBody.get("formulario_id").toString());
+		Formulario formBuscado   	= this.formularioService.findById(formulario_id);
+		
+		Long    solicitante_id     	= Long.parseLong(requestBody.get("funcionario_id").toString());
+		Usuario usuarioSolicitante 	= this.usuarioService.findById(solicitante_id);
+		
+		Long tipo_solicitud_id 		= Long.parseLong(requestBody.get("tipo_solicitud").toString());
+		
+		String estado 				= requestBody.get("estado").toString();
+		Long solicitud_id 			= Long.parseLong(requestBody.get("solicitud_id").toString());
+		
+		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
+		String    tipoSistema  = "extranjeria";
+		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
+		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
+		
+		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
+		Long      newSolicitudId = savedSolicitud.getId();
+		this.solicitudService.save(generaCodigoSolicitud(savedSolicitud, tipoSistema));
+		
+		this.solicitudService.saveTramite(tipo_solicitud_id, newSolicitudId);
+		Tramite tramiteBuscado 		= this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
+		Long tramite_id 			= tramiteBuscado.getId();
+		
+		//**************** PARA EL TRAMITE DETALLE****************		
+		String naturalizacion = requestBody.get("naturalizacion").toString();
+		String baja_orpe = requestBody.get("baja_orpe").toString();
+		
+		this.solicitudService.saveTramiteDetalle(tramite_id, "naturalizado", naturalizacion);
+		this.solicitudService.saveTramiteDetalle(tramite_id, "baja_orpe", baja_orpe);
+			
+		return savedSolicitud;
+	}
+	
+	@PostMapping("/sanearBajaOrpeNaturalizado")
+//public Solicitud sanearBajaOrpeNaturalizado(@RequestBody Map<String, Object> requestBoy) 
+	public Solicitud sanearBajaOrpeNaturalizado(@RequestBody List<Map<String, Object>>  requestBoy) {
+			
+		System.out.println(requestBoy);
+		
+		return new Solicitud();
+	}
+	
 	
 	@PostMapping("/sanearDirectiva0082019")
 	public Solicitud sanearDirectiva0082019(@RequestBody Map<String, Object> requestBody) {

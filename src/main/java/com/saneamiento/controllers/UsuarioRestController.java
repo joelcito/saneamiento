@@ -25,7 +25,7 @@ import com.saneamiento.models.entity.UsuarioRol;
 import com.saneamiento.models.services.IRolService;
 import com.saneamiento.models.services.IUsuarioService;
 
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "*"})
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioRestController {

@@ -16,7 +16,7 @@ import com.saneamiento.models.services.IValidadorService;
 
 @RestController
 @RequestMapping("/api/validador")
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "*"})
 public class ValidadorRestController {
 
 	@Autowired
