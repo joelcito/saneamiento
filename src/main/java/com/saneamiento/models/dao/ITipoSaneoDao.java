@@ -43,15 +43,26 @@ public interface ITipoSaneoDao extends CrudRepository<TipoSaneo, Long>{
 	
 	
 	// ***************** DOCUMENTO DETALLE TIPO SANEO *****************
-	@Query("SELECT ddts FROM DocumentoDetalleTipoSaneo ddts WHERE ddts.detalleTipoSaneo.id = :detalle_tipo_saneo_id")
+	//@Query("SELECT ddts FROM DocumentoDetalleTipoSaneo ddts WHERE ddts.detalleTipoSaneo.id = :detalle_tipo_saneo_id")
+	@Query("SELECT ddts FROM DocumentoDetalleTipoSaneo ddts WHERE ddts.detalleTipoSaneo.id = :detalle_tipo_saneo_id AND ddts.fechaEliminacion is null")
 	public List<DocumentoDetalleTipoSaneo> getDocumentoDetalleTipoSaneo(@Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
 	
 	@Query("SELECT ddts FROM DocumentoDetalleTipoSaneo ddts WHERE ddts.id = :documento_detalle_tipo_saneo_id")
 	public DocumentoDetalleTipoSaneo findByIdDocumentoDetalleTipoSaneo(@Param("documento_detalle_tipo_saneo_id") Long documento_detalle_tipo_saneo_id);
 	
 	@Modifying
-	@Query("INSERT INTO DocumentoDetalleTipoSaneo (nombre, detalleTipoSaneo) VALUES (:nombre, :detalleTipoSaneo)")
-	public int saveDocumentoDetalleTipoSaneo(@Param("nombre") String nombre, @Param("detalleTipoSaneo") DetalleTipoSaneo detalleTipoSaneo);
+	//@Query("INSERT INTO DocumentoDetalleTipoSaneo (nombre, detalleTipoSaneo) VALUES (:nombre, :detalleTipoSaneo)")
+	//public int saveDocumentoDetalleTipoSaneo(@Param("nombre") String nombre, @Param("detalleTipoSaneo") DetalleTipoSaneo detalleTipoSaneo);
+	@Query(value = " INSERT INTO documento_detalle_tipo_saneo (nombre, usuario_creador, detalle_tipo_saneo_id, fecha_creacion, tamanio, tipo_documento) "
+			+ " VALUES (:nombre, :usuario ,:detalleTipoSaneo, :fecha_creacion, :tamanio, :tipo_documento)", nativeQuery = true)
+	public int saveDocumentoDetalleTipoSaneo(
+			@Param("nombre") String nombre, 
+			@Param("usuario") Long usuario, 
+			@Param("detalleTipoSaneo") Long detalleTipoSaneo, 
+			@Param("fecha_creacion") LocalDateTime fecha_creacion, 
+			@Param("tamanio") String tamanio, 
+			@Param("tipo_documento") String tipo_documento
+			);
 	
 	@Query("SELECT ts.id AS idTipoSaneo, ts.nombre AS nombreTipoSaneo, dts.id AS idDetalleTipoSaneo, dts.nombre AS nombreDetalleTipoSaneo " +
 		    "FROM TipoSaneo ts INNER JOIN DetalleTipoSaneo dts ON ts.id = dts.tipoSaneo.id WHERE dts.id = :detalleTipoSaneoId")

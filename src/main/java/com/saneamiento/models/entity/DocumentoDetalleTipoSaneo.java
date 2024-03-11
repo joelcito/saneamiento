@@ -18,7 +18,6 @@ import lombok.Data;
 @Table(name = "documento_detalle_tipo_saneo")
 public class DocumentoDetalleTipoSaneo implements Serializable {
 
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -33,6 +32,10 @@ public class DocumentoDetalleTipoSaneo implements Serializable {
 	private String UsuarioEliminador;
 	
 	private String nombre;
+	
+	private String tipo_documento;
+	
+	private String tamanio;
 	
 	@ManyToOne
 	@JoinColumn(name = "detalle_tipo_saneo_id")

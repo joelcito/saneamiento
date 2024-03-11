@@ -43,7 +43,7 @@ public class TipoSaneoServiceImpl implements ITipoSaneoService{
 	public DetalleTipoSaneo findByIdDetalleTipoSaneo(Long detalle_tipo_saneo_id) {
 		return this.tipoSaneoDao.findByIdDetalleTipoSaneo(detalle_tipo_saneo_id);
 	}
-
+	
 	@Override
 	@Transactional(readOnly = true)
 	public List<DetalleTipoSaneo> getDetalleTiposaneo(Long detalle_tipo_saneo_id) {
@@ -71,8 +71,9 @@ public class TipoSaneoServiceImpl implements ITipoSaneoService{
 
 	@Override
 	@Transactional
-	public int saveDocumentoDetalleTipoSaneo(String nombre, DetalleTipoSaneo detalleTipoSaneo) {
-		return this.tipoSaneoDao.saveDocumentoDetalleTipoSaneo(nombre, detalleTipoSaneo);
+	//public int saveDocumentoDetalleTipoSaneo(String nombre, DetalleTipoSaneo detalleTipoSaneo) {
+	public int saveDocumentoDetalleTipoSaneo(String nombre, Long usuario, Long detalleTipoSaneo, LocalDateTime fecha, String tamanio, String tipo_documento) {
+		return this.tipoSaneoDao.saveDocumentoDetalleTipoSaneo(nombre, usuario, detalleTipoSaneo, fecha, tamanio, tipo_documento);
 	}
 
 	@Override

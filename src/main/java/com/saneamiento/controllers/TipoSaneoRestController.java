@@ -1,6 +1,9 @@
 package com.saneamiento.controllers;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +112,21 @@ public class TipoSaneoRestController {
 	@PostMapping("/documento_detalle_tipo_saneo/")
 	public DocumentoDetalleTipoSaneo saveDocumentoDetalleTipoSaneo(@RequestBody Map<String, Object> requestBody) {
 
-		//System.out.println(requestBody);
+		System.out.println(requestBody);
+		
+		String nombre 				= requestBody.get("nombre").toString();
+		Long detalle_tipo_saneo_id 	= Long.parseLong(requestBody.get("detalleTipoSaneo").toString());
+		Long usuario_id 			= Long.parseLong(requestBody.get("usuario").toString());
+		String tamanio 				= requestBody.get("tamanio").toString();
+		String tipo_documento 		= requestBody.get("tipo_documento").toString();
+		
+		Instant instant = new Date().toInstant();
+		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+		
+		this.tipoSaneoService.saveDocumentoDetalleTipoSaneo(nombre, usuario_id, detalle_tipo_saneo_id, localDateTime, tamanio, tipo_documento);
+		
+		/*
+		
 		Long detalle_tipo_saneo_id 				= ((Integer) requestBody.get("detalleTipoSaneo")).longValue();
 		String nombre 							= requestBody.get("nombre").toString();
 
@@ -128,6 +145,8 @@ public class TipoSaneoRestController {
 
 		TipoSaneo tipo_saneo 					= this.tipoSaneoService.findById(id_tipo_saneo);
 		List<DetalleTipoSaneo> lisDetaTipoSane 	= tipo_saneo.getDetalles();
+				
+		System.out.println("TAMANIO => "+lisDetaTipoSane.size());
 
 		Iterator<DetalleTipoSaneo> iterator = lisDetaTipoSane.iterator();
 		while (iterator.hasNext() && sw) {
@@ -144,11 +163,12 @@ public class TipoSaneoRestController {
 				dar.setDocumentosDetalles(listDoc);
 				iterator.remove(); // Remover el elemento actual de la lista para evitar ConcurrentModificationException
 				sw = false;
-			}
+			}						
 		}
 		
-		this.tipoSaneoService.save(tipo_saneo);
+		this.tipoSaneoService.save(tipo_saneo);		
 		
+		*/
 		return new DocumentoDetalleTipoSaneo();
 	}
 	

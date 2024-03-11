@@ -42,8 +42,9 @@ public class DetalleTipoSaneo implements Serializable {
 	@JoinColumn(name = "tipo_saneo_id")
 	private TipoSaneo tipoSaneo;
 	
-	@OneToMany(mappedBy = "detalleTipoSaneo", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "detalleTipoSaneo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonIgnore
+	//@JsonManagedReference
 	private List<DocumentoDetalleTipoSaneo> documentosDetalles;
 	
 //	@OneToMany(mappedBy = "detalleTipoSaneo", cascade = CascadeType.ALL)

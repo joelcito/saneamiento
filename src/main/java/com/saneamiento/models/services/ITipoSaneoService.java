@@ -32,7 +32,8 @@ public interface ITipoSaneoService {
 	
 	public DocumentoDetalleTipoSaneo findByIdDocumentoDetalleTipoSaneo(Long documento_detalle_tipo_saneo_id);
 	
-	public int saveDocumentoDetalleTipoSaneo(String nombre, DetalleTipoSaneo detalleTipoSaneo);
+	//public int saveDocumentoDetalleTipoSaneo(String nombre, DetalleTipoSaneo detalleTipoSaneo);
+	public int saveDocumentoDetalleTipoSaneo(String nombre, Long usuario, Long detalleTipoSaneo, LocalDateTime fecha, String tamanio, String tipo_documento);
 	
 	public Object[] getTipoSaneoDetalle(Long detalleTipoSaneoId);
 
