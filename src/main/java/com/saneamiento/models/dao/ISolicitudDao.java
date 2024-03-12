@@ -1,5 +1,6 @@
 package com.saneamiento.models.dao;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Solicitud;
+import com.saneamiento.models.entity.SolicitudArchivo;
 import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 
@@ -107,6 +109,15 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	public int eliminacionLogicaTemporalSolicitudDeseleccion(@Param("fechaEliminacion") LocalDateTime fechaEliminacion, @Param("UsuarioEliminador") String UsuarioEliminador, @Param("solicitud_id") Long solicitud_id, @Param("campo") String campo);
 		
 	@Query("SELECT ts FROM TemporalSolicitud ts WHERE ts.solicitud.id = :solicitud_id AND ts.fechaEliminacion is null")
-	public List<TemporalSolicitud> getTemporalesByIdSolicitud(@Param("solicitud_id") Long solicitud_id);	
-		
+	public List<TemporalSolicitud> getTemporalesByIdSolicitud(@Param("solicitud_id") Long solicitud_id);
+
+	
+	//***************** SOLICITUD ARCHIVOS *****************
+	@Modifying
+	@Query(value = "INSERT INTO solicitud_archivo (solicitud_id, usuario_creador, gestion, sistema, mes, fecha, nombre_archivo, eTag, location, key, bucket, fecha_creacion) "
+							+ " VALUES (:solicitud, :usuario_creador, :gestion, :sistema, :mes, :fecha, :nombre_archivo, :ETag, :Location, :key, :Bucket, :fechaCreacion)", nativeQuery = true)
+	public int saveSolicitudArchivo(@Param("solicitud") Long solicitud, @Param("usuario_creador") String usuario_creador, @Param("gestion") String gestion, @Param("sistema") String sistema, @Param("mes") String mes, @Param("fecha") Date fecha, @Param("nombre_archivo") String nombre_archivo, @Param("ETag") String ETag, @Param("Location") String Location, @Param("key") String key, @Param("Bucket") String Bucket, @Param("fechaCreacion") LocalDateTime fechaCreacion);
+	
+	@Query("SELECT sa FROM SolicitudArchivo sa WHERE sa.solicitud.id = :solicitud_id AND sa.fechaEliminacion is null")
+	public List<SolicitudArchivo> getSolicitudArchivosById(@Param("solicitud_id") Long solicitud_id);
 }

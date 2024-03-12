@@ -1,5 +1,6 @@
 package com.saneamiento.models.services;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Solicitud;
+import com.saneamiento.models.entity.SolicitudArchivo;
 import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 
@@ -65,5 +67,11 @@ public interface ISolicitudService {
 	public int eliminacionLogicaTemporalSolicitudDeseleccion(LocalDateTime fechaEliminacion,String UsuarioEliminador,Long solicitud_id,String campo);
 	
 	public List<TemporalSolicitud> getTemporalesByIdSolicitud(Long solicitud_id); // HASTA FEBRERO
+	
+	//***************** SOLICITUD ARCHIVOS *****************
+	public int saveSolicitudArchivo(Long Solicitud, String usuario_creador, String gestion, String sistema, String mes, Date fecha, String nombre_archivo, String ETag, String Location, String key, String Bucket, LocalDateTime fechaCreacion);
+	
+	public List<SolicitudArchivo> getSolicitudArchivosById(Long solicitud_id);
+	
 		
 }

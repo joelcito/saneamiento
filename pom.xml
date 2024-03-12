@@ -86,7 +86,18 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.11.5</version>
 			<scope>runtime</scope>
-		</dependency>	
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/io.minio/minio 
+		<dependency>
+		    <groupId>io.minio</groupId>
+		    <artifactId>minio</artifactId>
+		    <version>8.5.9</version>
+		</dependency>
+		-->
+	
+	    
 	</dependencies>
 
 	<build>

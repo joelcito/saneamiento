@@ -26,12 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Formulario;
 import com.saneamiento.models.entity.Solicitud;
+import com.saneamiento.models.entity.SolicitudArchivo;
 import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 import com.saneamiento.models.entity.Usuario;
 import com.saneamiento.models.services.IFormularioService;
 import com.saneamiento.models.services.ISolicitudService;
 import com.saneamiento.models.services.IUsuarioService;
+
+import jakarta.websocket.server.PathParam;
 
 @RestController
 @RequestMapping("/api/solicitud")
@@ -594,6 +597,42 @@ public class SolicitudRestController {
 		
 		return this.solicitudService.verificaSiTieneTramatiesEnviados(serial, detalle_tipo_saneo_id);
 	}
+	
+	//
+	@PostMapping("/saveSolicitudArchivo")
+	public int saveSolicitudArchivo(@RequestBody Map<String, Object> requestBody) {
+		
+		//System.out.println(requestBody);
+		
+		Long solicitud_id 			= Long.parseLong(requestBody.get("solicitud").toString());
+		String usuario_ud  			= requestBody.get("usuario_creador").toString();
+		String gestion  			= requestBody.get("gestion").toString();
+		String sistema  			= requestBody.get("sistema").toString();
+		String mes  				= requestBody.get("mes").toString();
+		//String fecha  = requestBody.get("fecha").toString();
+		
+		Date utilDate = new Date(); // Supongamos que la fecha es la fecha actual
+		// Suponiendo que tienes un java.util.Date llamado utilDate
+		java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());		
+
+		String nombre_archivo  = requestBody.get("nombre_archivo").toString();
+		String ETag  = requestBody.get("ETag").toString();
+		String Location  = requestBody.get("Location").toString();
+		String key  = requestBody.get("key").toString();
+		String Bucket  = requestBody.get("Bucket").toString();
+		
+		Instant instant = new Date().toInstant();
+		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+			
+		//this.solicitudService.saveSolicitudArchivo(solicitudBuscado, "", gestion, sistema, mes, sqlDate, nombre_archivo, ETag, Location, key, Bucket, localDateTime);
+		return this.solicitudService.saveSolicitudArchivo(solicitud_id, usuario_ud, gestion, sistema, mes, sqlDate, nombre_archivo, ETag, Location, key, Bucket, localDateTime);
+		
+	}
+	
+	@GetMapping("/getSolicitudArchivosById/{solicitud_id}")
+	public List<SolicitudArchivo> getSolicitudArchivosById(@PathVariable Long solicitud_id) {
+		return this.solicitudService.getSolicitudArchivosById(solicitud_id);
+	}
 
 
 
@@ -611,7 +650,6 @@ public class SolicitudRestController {
 		solicitud.setCodigo(cod);
 		return solicitud;
 	}
-
 
     private Solicitud asignarUsuarioSegunReglas(List<Map<String, Object>> listaReglas , Boolean swIerable, Solicitud newsolicitud) {
     	

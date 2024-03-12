@@ -1,5 +1,6 @@
 package com.saneamiento.models.services;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.saneamiento.models.dao.ISolicitudDao;
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Solicitud;
+import com.saneamiento.models.entity.SolicitudArchivo;
 import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 
@@ -151,5 +153,19 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	@Transactional
 	public int eliminacionLogicaTemporalSolicitudDeseleccion(LocalDateTime fechaEliminacion, String UsuarioEliminador, Long solicitud_id, String campo) {
 		return this.solicitudDao.eliminacionLogicaTemporalSolicitudDeseleccion(fechaEliminacion, UsuarioEliminador, solicitud_id, campo);
+	}
+	
+	
+	//***************** SOLICITUD ARCHIVOS *****************
+	@Override
+	@Transactional
+	public int saveSolicitudArchivo(Long solicitud, String usuario_creador, String gestion, String sistema, String mes, Date fecha, String nombre_archivo, String ETag, String Location, String key, String Bucket, LocalDateTime fechaCreacion) {
+		return this.solicitudDao.saveSolicitudArchivo(solicitud, usuario_creador, gestion, sistema, mes, fecha, nombre_archivo, ETag, Location, key, Bucket, fechaCreacion);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<SolicitudArchivo> getSolicitudArchivosById(Long solicitud_id) {
+		return this.solicitudDao.getSolicitudArchivosById(solicitud_id);
 	}
 }
