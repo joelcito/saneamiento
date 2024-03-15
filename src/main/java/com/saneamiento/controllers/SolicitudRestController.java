@@ -345,8 +345,8 @@ public class SolicitudRestController {
 		
 		
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
-		String tipoSistema = "extranjeria";
-			Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
+		String tipoSistema 		= "extranjeria";
+		Solicitud newsolicitud 	= generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
 		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		
 		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
@@ -375,6 +375,8 @@ public class SolicitudRestController {
 		    	//System.out.println("key: "+key +" | valor: "+valor);
 		    }
 		});
+		
+		//**************** PARA EL MENSAJE DE IDA****************
 		       
       			
 		return savedSolicitud;
@@ -433,6 +435,62 @@ public class SolicitudRestController {
 		    }
 		});	
 				
+		return savedSolicitud;
+	}
+	
+
+	@PostMapping("/saveSolicitudConvenio")
+	public Solicitud saveSolicitudConvenio(@RequestBody Map<String,  Object> requestBody) {
+		
+		System.out.println(requestBody);
+		
+		String serialExtRegistros 	= requestBody.get("serialExtRegistros").toString();
+		
+		Extranjeria ex 				= this.solicitudService.buscaSerialExtranjero(serialExtRegistros);	
+		
+		if(ex == null) {			
+			String serialDocumentoExtRegistros = requestBody.get("serialDocumentoExtRegistros").toString();
+			String nroCedulaBolExtRegistros    = requestBody.get("nroCedulaBolExtRegistros").toString();
+			this.solicitudService.saveExtranjeria(serialExtRegistros, serialDocumentoExtRegistros, nroCedulaBolExtRegistros);
+			ex = this.solicitudService.buscaSerialExtranjero(serialExtRegistros);
+		}
+		
+		Long       formulario_id 	= Long.parseLong(requestBody.get("formulario_id").toString());
+		Formulario formBuscado   	= this.formularioService.findById(formulario_id);
+		
+		Long    solicitante_id     	= Long.parseLong(requestBody.get("funcionario_id").toString());
+		Usuario usuarioSolicitante 	= this.usuarioService.findById(solicitante_id);
+		
+		Long tipo_solicitud_id 		= Long.parseLong(requestBody.get("tipo_solicitud").toString());
+		
+		String estado 				= requestBody.get("estado").toString();
+		Long solicitud_id 			= Long.parseLong(requestBody.get("solicitud_id").toString());
+		
+		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
+		String    tipoSistema  = "extranjeria";
+		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
+		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
+		
+		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
+		Long      newSolicitudId = savedSolicitud.getId();
+		this.solicitudService.save(generaCodigoSolicitud(savedSolicitud, tipoSistema));
+		
+		//**************** PARA EL TRAMITE ****************
+		this.solicitudService.saveTramite(tipo_solicitud_id, newSolicitudId);
+		Tramite tramiteBuscado 		= this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
+		Long tramite_id 			= tramiteBuscado.getId();
+		//**************** END PARA EL TRAMITE ****************
+		
+		//**************** PARA EL TRAMITE DETALLE****************
+		requestBody.forEach((key, valor) -> {
+			// Verificar si el key contiene la palabra "respuesta"
+		    if (key.toLowerCase().contains("_respuesta")) {
+		        //System.out.println("La clave contiene la palabra 'respuesta'");
+		    	this.solicitudService.saveTramiteDetalle(tramite_id, key.toString(), valor.toString());
+		    	//System.out.println("key: "+key +" | valor: "+valor);
+		    }
+		});
+		
 		return savedSolicitud;
 	}
 	

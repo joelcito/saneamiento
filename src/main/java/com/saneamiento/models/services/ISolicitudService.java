@@ -13,6 +13,7 @@ import com.saneamiento.models.entity.Solicitud;
 import com.saneamiento.models.entity.SolicitudArchivo;
 import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
+import com.saneamiento.models.entity.Usuario;
 
 public interface ISolicitudService {
 	
@@ -72,6 +73,10 @@ public interface ISolicitudService {
 	public int saveSolicitudArchivo(Long Solicitud, String usuario_creador, String gestion, String sistema, String mes, Date fecha, String nombre_archivo, String ETag, String Location, String key, String Bucket, LocalDateTime fechaCreacion);
 	
 	public List<SolicitudArchivo> getSolicitudArchivosById(Long solicitud_id);
+	
+	
+	//***************** SOLICITUD CONVERSACION *****************
+	public int saveSolicitudConversacion(String usuario_creador, Solicitud solicitud, Usuario usuarioSolicitante, String texto, String estado, String tipo, LocalDateTime fechaCreacion);
 	
 		
 }

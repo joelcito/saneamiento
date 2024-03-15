@@ -16,6 +16,7 @@ import com.saneamiento.models.entity.Solicitud;
 import com.saneamiento.models.entity.SolicitudArchivo;
 import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
+import com.saneamiento.models.entity.Usuario;
 
 @Service
 public class SolicitudServiceImpl implements ISolicitudService {
@@ -168,4 +169,15 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	public List<SolicitudArchivo> getSolicitudArchivosById(Long solicitud_id) {
 		return this.solicitudDao.getSolicitudArchivosById(solicitud_id);
 	}
+
+
+	
+	//***************** SOLICITUD CONVERSACION *****************
+	@Override
+	@Transactional
+	public int saveSolicitudConversacion(String usuario_creador, Solicitud solicitud, Usuario usuarioSolicitante,
+			String texto, String estado, String tipo, LocalDateTime fechaCreacion) {
+		return this.solicitudDao.saveSolicitudConversacion(usuario_creador, solicitud, usuarioSolicitante, texto, estado, tipo, fechaCreacion);
+	}
+	
 }

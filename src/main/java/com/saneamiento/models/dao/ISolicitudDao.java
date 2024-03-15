@@ -16,6 +16,7 @@ import com.saneamiento.models.entity.Solicitud;
 import com.saneamiento.models.entity.SolicitudArchivo;
 import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
+import com.saneamiento.models.entity.Usuario;
 
 public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
@@ -120,4 +121,12 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
 	@Query("SELECT sa FROM SolicitudArchivo sa WHERE sa.solicitud.id = :solicitud_id AND sa.fechaEliminacion is null")
 	public List<SolicitudArchivo> getSolicitudArchivosById(@Param("solicitud_id") Long solicitud_id);
+	
+	
+	//***************** SOLICITUD CONVERSACION *****************
+	@Modifying
+	@Query("INSERT INTO SolicitudConversacion (usuario_creador, solicitud, usuarioSolicitante, texto, estado, tipo, fechaCreacion) "
+			+ " VALUES (:usuario_creador, :solicitud, :usuarioSolicitante, :texto, :estado, :tipo, :fechaCreacion)")
+	
+	public int saveSolicitudConversacion(@Param("usuario_creador") String usuario_creador, @Param("solicitud") Solicitud solicitud, @Param("usuarioSolicitante") Usuario usuarioSolicitante, @Param("texto") String texto, @Param("estado") String estado, @Param("tipo") String tipo, @Param("fechaCreacion") LocalDateTime fechaCreacion);
 }
