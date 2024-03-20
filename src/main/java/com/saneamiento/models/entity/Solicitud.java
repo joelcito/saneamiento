@@ -65,6 +65,9 @@ public class Solicitud implements Serializable {
 	@Column(length = 15)
 	private String estado;
 	
+	@Column(length = 100)
+	private String prioridad;
+		
 	@Column(name = "fecha_solicitud", columnDefinition = "TIMESTAMP")
     private LocalDateTime fechaSolicitud;
 	

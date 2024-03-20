@@ -27,4 +27,7 @@ public class RegisterRequest {
 	String nombre_dependencia;
 	String nombre_cargo;
 	String departamento;
+	String dependencia_id;
+	String organizacion_id;
+	String jer_org_id;
 }

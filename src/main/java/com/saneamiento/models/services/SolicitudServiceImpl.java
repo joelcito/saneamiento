@@ -14,6 +14,7 @@ import com.saneamiento.models.dao.ISolicitudDao;
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Solicitud;
 import com.saneamiento.models.entity.SolicitudArchivo;
+import com.saneamiento.models.entity.SolicitudConversacion;
 import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 import com.saneamiento.models.entity.Usuario;
@@ -59,6 +60,12 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	@Transactional(readOnly = true)
 	public List<Map<String, Object>> verificaSiTieneTramatiesEnviados(String serialextregistros,Long detalle_tipo_saneo_id) {
 		return this.solicitudDao.verificaSiTieneTramatiesEnviados(serialextregistros, detalle_tipo_saneo_id);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Solicitud> listadoCasos(String dependencia) {
+		return this.solicitudDao.listadoCasos(dependencia);
 	}
 	
 	//*********************** EXTRANJERIA ***********************
@@ -175,9 +182,30 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	//***************** SOLICITUD CONVERSACION *****************
 	@Override
 	@Transactional
+	public int saveSolicitudConversacion(String usuario_creador, Long solicitud_id, Long usuario_id_solicitante,
+			String texto, String estado, String tipo, LocalDateTime fecha_creacion) {
+		return this.solicitudDao.saveSolicitudConversacion(usuario_creador, solicitud_id, usuario_id_solicitante, texto, estado, tipo, fecha_creacion);
+	}
+	/*
 	public int saveSolicitudConversacion(String usuario_creador, Solicitud solicitud, Usuario usuarioSolicitante,
 			String texto, String estado, String tipo, LocalDateTime fechaCreacion) {
 		return this.solicitudDao.saveSolicitudConversacion(usuario_creador, solicitud, usuarioSolicitante, texto, estado, tipo, fechaCreacion);
+	}
+	 */
+
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<SolicitudConversacion> getSolicitudConversacionById(Long solicitud_id) {
+		return this.solicitudDao.getSolicitudConversacionById(solicitud_id);
+	}
+
+
+	@Override
+	@Transactional
+	public int saveSolicitudConversacionRespuesta(String usuario_creador, Long solicitud_id, Long usuario_id_respuesta,
+			String texto, String estado, String tipo, LocalDateTime fecha_creacion) {
+		return this.solicitudDao.saveSolicitudConversacionRespuesta(usuario_creador, solicitud_id, usuario_id_respuesta, texto, estado, tipo, fecha_creacion);
 	}
 	
 }

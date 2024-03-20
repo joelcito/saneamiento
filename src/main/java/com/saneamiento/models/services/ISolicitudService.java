@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Solicitud;
 import com.saneamiento.models.entity.SolicitudArchivo;
+import com.saneamiento.models.entity.SolicitudConversacion;
 import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 import com.saneamiento.models.entity.Usuario;
@@ -27,6 +28,8 @@ public interface ISolicitudService {
 	public Solicitud save(Solicitud solicitud);
 	
 	public Solicitud findById(Long id); // HASTA FEBRERO
+	
+	public List<Solicitud> listadoCasos(String dependencia);
 	
 	
 	
@@ -76,7 +79,14 @@ public interface ISolicitudService {
 	
 	
 	//***************** SOLICITUD CONVERSACION *****************
-	public int saveSolicitudConversacion(String usuario_creador, Solicitud solicitud, Usuario usuarioSolicitante, String texto, String estado, String tipo, LocalDateTime fechaCreacion);
+	//public int saveSolicitudConversacion(String usuario_creador, Solicitud solicitud, Usuario usuarioSolicitante, String texto, String estado, String tipo, LocalDateTime fechaCreacion);
+	public int saveSolicitudConversacion(String usuario_creador, Long solicitud_id, Long usuario_id_solicitante, String texto, String estado, String tipo, LocalDateTime fecha_creacion);
+	
+	public int saveSolicitudConversacionRespuesta(String usuario_creador, Long solicitud_id, Long usuario_id_respuesta, String texto, String estado, String tipo, LocalDateTime fecha_creacion);
+	
+	public List<SolicitudConversacion> getSolicitudConversacionById(Long solicitud_id);
+	
+	
 	
 		
 }

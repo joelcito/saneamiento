@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import com.saneamiento.models.entity.Extranjeria;
 import com.saneamiento.models.entity.Solicitud;
 import com.saneamiento.models.entity.SolicitudArchivo;
+import com.saneamiento.models.entity.SolicitudConversacion;
 import com.saneamiento.models.entity.TemporalSolicitud;
 import com.saneamiento.models.entity.Tramite;
 import com.saneamiento.models.entity.Usuario;
@@ -34,6 +35,31 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 			+ "    ON s.id = t.solicitud_id "
 			+ "WHERE e.serialextregistros = :serialextregistros AND t.detalle_tipo_saneo_id = :detalle_tipo_saneo_id", nativeQuery = true)
 	public List<Map<String, Object>> verificaSiTieneTramatiesEnviados(@Param("serialextregistros") String serialextregistros, @Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
+	
+	
+	/*
+	@Query( value =  "SELECT * "
+			+ "FROM saneamiento.solicitud s "
+			+ "WHERE s.asignado_id IN ( "
+			+ "    SELECT u.id "
+			+ "    FROM saneamiento.usuario u  "
+			+ "    WHERE u.dependencia_id = :dependencia AND u.fecha_eliminacion is NULL "
+			+ "  ) AND s.fecha_eliminacion IS null ORDER BY s.id DESC ", nativeQuery = true)
+	*/
+	@Query(value = "SELECT *  "
+			+ "FROM saneamiento.solicitud s "
+			+ "WHERE s.asignado_id IN ( "
+			+ "    SELECT u.id "
+			+ "    FROM saneamiento.usuario u  "
+			+ "    WHERE u.dependencia_id = :dependencia AND u.fecha_eliminacion is NULL "
+			+ "  ) OR s.solicitante_id IN ( "
+			+ "  SELECT u.id "
+			+ "    FROM saneamiento.usuario u  "
+			+ "    WHERE u.dependencia_id = :dependencia AND u.fecha_eliminacion is NULL "
+			+ "  ) "
+			+ "   "
+			+ "AND s.fecha_eliminacion IS NULL ORDER BY s.id DESC", nativeQuery = true)
+	public List<Solicitud> listadoCasos(@Param("dependencia") String dependencia);
 	
 	
 	
@@ -125,8 +151,16 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
 	//***************** SOLICITUD CONVERSACION *****************
 	@Modifying
-	@Query("INSERT INTO SolicitudConversacion (usuario_creador, solicitud, usuarioSolicitante, texto, estado, tipo, fechaCreacion) "
-			+ " VALUES (:usuario_creador, :solicitud, :usuarioSolicitante, :texto, :estado, :tipo, :fechaCreacion)")
+	@Query(value = "INSERT INTO solicitud_conversacion (usuario_creador, solicitud_id, usuario_id_respuesta, texto, estado, tipo, fecha_creacion) "
+			+ " VALUES (:usuario_creador, :solicitud_id, :usuario_id_respuesta, :texto, :estado, :tipo, :fecha_creacion)" , nativeQuery = true)
+	public int saveSolicitudConversacionRespuesta(@Param("usuario_creador") String usuario_creador, @Param("solicitud_id") Long solicitud_id, @Param("usuario_id_respuesta") Long usuario_id_respuesta, @Param("texto") String texto, @Param("estado") String estado, @Param("tipo") String tipo, @Param("fecha_creacion") LocalDateTime fecha_creacion);
 	
-	public int saveSolicitudConversacion(@Param("usuario_creador") String usuario_creador, @Param("solicitud") Solicitud solicitud, @Param("usuarioSolicitante") Usuario usuarioSolicitante, @Param("texto") String texto, @Param("estado") String estado, @Param("tipo") String tipo, @Param("fechaCreacion") LocalDateTime fechaCreacion);
+	@Modifying
+	@Query(value = "INSERT INTO solicitud_conversacion (usuario_creador, solicitud_id, usuario_id_solicitante, texto, estado, tipo, fecha_creacion) "
+			+ " VALUES (:usuario_creador, :solicitud_id, :usuario_id_solicitante, :texto, :estado, :tipo, :fecha_creacion)" , nativeQuery = true)
+	public int saveSolicitudConversacion(@Param("usuario_creador") String usuario_creador, @Param("solicitud_id") Long solicitud_id, @Param("usuario_id_solicitante") Long usuario_id_solicitante, @Param("texto") String texto, @Param("estado") String estado, @Param("tipo") String tipo, @Param("fecha_creacion") LocalDateTime fecha_creacion);
+	
+	@Query("SELECT sc FROM SolicitudConversacion sc WHERE sc.solicitud.id = :solicitud_id AND  sc.fechaEliminacion IS NULL ORDER BY sc.fechaCreacion DESC")
+	public List<SolicitudConversacion> getSolicitudConversacionById(@Param("solicitud_id") Long solicitud_id);
+	
 }
