@@ -55,6 +55,12 @@ public class SolicitudArchivo implements Serializable{
 	
 	private String Bucket;
 	
+	private String tipo_archivo;
+	
+	@ManyToOne
+	@JoinColumn(name = "conversacion_id")
+	private SolicitudConversacion conversacion;
+	
 	@Column(name = "fecha_creacion", columnDefinition = "TIMESTAMP")
     private LocalDateTime fechaCreacion;
 	

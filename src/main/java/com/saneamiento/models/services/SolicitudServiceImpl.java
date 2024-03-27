@@ -167,14 +167,14 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	//***************** SOLICITUD ARCHIVOS *****************
 	@Override
 	@Transactional
-	public int saveSolicitudArchivo(Long solicitud, String usuario_creador, String gestion, String sistema, String mes, Date fecha, String nombre_archivo, String ETag, String Location, String key, String Bucket, LocalDateTime fechaCreacion) {
-		return this.solicitudDao.saveSolicitudArchivo(solicitud, usuario_creador, gestion, sistema, mes, fecha, nombre_archivo, ETag, Location, key, Bucket, fechaCreacion);
+	public int saveSolicitudArchivo(Long solicitud, String usuario_creador, String gestion, String sistema, String mes, Date fecha, String nombre_archivo, String ETag, String Location, String key, String Bucket, LocalDateTime fechaCreacion, String tipo_archivo, Long conversacion_id) {
+		return this.solicitudDao.saveSolicitudArchivo(solicitud, usuario_creador, gestion, sistema, mes, fecha, nombre_archivo, ETag, Location, key, Bucket, fechaCreacion, tipo_archivo, conversacion_id);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<SolicitudArchivo> getSolicitudArchivosById(Long solicitud_id) {
-		return this.solicitudDao.getSolicitudArchivosById(solicitud_id);
+	public List<SolicitudArchivo> getSolicitudArchivosById(Long solicitud_id, Long conversacion_id) {
+		return this.solicitudDao.getSolicitudArchivosById(solicitud_id, conversacion_id);
 	}
 
 
@@ -182,6 +182,7 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	//***************** SOLICITUD CONVERSACION *****************
 	@Override
 	@Transactional
+	//public int saveSolicitudConversacion(String usuario_creador, Long solicitud_id, Long usuario_id_solicitante,
 	public int saveSolicitudConversacion(String usuario_creador, Long solicitud_id, Long usuario_id_solicitante,
 			String texto, String estado, String tipo, LocalDateTime fecha_creacion) {
 		return this.solicitudDao.saveSolicitudConversacion(usuario_creador, solicitud_id, usuario_id_solicitante, texto, estado, tipo, fecha_creacion);
@@ -193,13 +194,11 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	}
 	 */
 
-
 	@Override
 	@Transactional(readOnly = true)
 	public List<SolicitudConversacion> getSolicitudConversacionById(Long solicitud_id) {
 		return this.solicitudDao.getSolicitudConversacionById(solicitud_id);
 	}
-
 
 	@Override
 	@Transactional
@@ -207,5 +206,13 @@ public class SolicitudServiceImpl implements ISolicitudService {
 			String texto, String estado, String tipo, LocalDateTime fecha_creacion) {
 		return this.solicitudDao.saveSolicitudConversacionRespuesta(usuario_creador, solicitud_id, usuario_id_respuesta, texto, estado, tipo, fecha_creacion);
 	}
-	
+
+
+	@Override
+	@Transactional(readOnly = true)
+	public Long maxSolicitudConversacionByIdSolicitud(Long solicitudId) {
+		return this.solicitudDao.maxSolicitudConversacionByIdSolicitud(solicitudId);
+	}
+
 }
+

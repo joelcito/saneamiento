@@ -73,19 +73,21 @@ public interface ISolicitudService {
 	public List<TemporalSolicitud> getTemporalesByIdSolicitud(Long solicitud_id); // HASTA FEBRERO
 	
 	//***************** SOLICITUD ARCHIVOS *****************
-	public int saveSolicitudArchivo(Long Solicitud, String usuario_creador, String gestion, String sistema, String mes, Date fecha, String nombre_archivo, String ETag, String Location, String key, String Bucket, LocalDateTime fechaCreacion);
+	public int saveSolicitudArchivo(Long Solicitud, String usuario_creador, String gestion, String sistema, String mes, Date fecha, String nombre_archivo, String ETag, String Location, String key, String Bucket, LocalDateTime fechaCreacion, String tipo_archivo, Long conversacion_id);
 	
-	public List<SolicitudArchivo> getSolicitudArchivosById(Long solicitud_id);
+	public List<SolicitudArchivo> getSolicitudArchivosById(Long solicitud_id, Long conversacion_id);
 	
 	
 	//***************** SOLICITUD CONVERSACION *****************
 	//public int saveSolicitudConversacion(String usuario_creador, Solicitud solicitud, Usuario usuarioSolicitante, String texto, String estado, String tipo, LocalDateTime fechaCreacion);
+	//public int saveSolicitudConversacion(String usuario_creador, Long solicitud_id, Long usuario_id_solicitante, String texto, String estado, String tipo, LocalDateTime fecha_creacion);
 	public int saveSolicitudConversacion(String usuario_creador, Long solicitud_id, Long usuario_id_solicitante, String texto, String estado, String tipo, LocalDateTime fecha_creacion);
 	
 	public int saveSolicitudConversacionRespuesta(String usuario_creador, Long solicitud_id, Long usuario_id_respuesta, String texto, String estado, String tipo, LocalDateTime fecha_creacion);
 	
 	public List<SolicitudConversacion> getSolicitudConversacionById(Long solicitud_id);
-	
+
+	public Long maxSolicitudConversacionByIdSolicitud(Long solicitudId);
 	
 	
 		

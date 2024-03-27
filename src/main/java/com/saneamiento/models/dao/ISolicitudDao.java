@@ -141,12 +141,12 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
 	//***************** SOLICITUD ARCHIVOS *****************
 	@Modifying
-	@Query(value = "INSERT INTO solicitud_archivo (solicitud_id, usuario_creador, gestion, sistema, mes, fecha, nombre_archivo, eTag, location, key, bucket, fecha_creacion) "
-							+ " VALUES (:solicitud, :usuario_creador, :gestion, :sistema, :mes, :fecha, :nombre_archivo, :ETag, :Location, :key, :Bucket, :fechaCreacion)", nativeQuery = true)
-	public int saveSolicitudArchivo(@Param("solicitud") Long solicitud, @Param("usuario_creador") String usuario_creador, @Param("gestion") String gestion, @Param("sistema") String sistema, @Param("mes") String mes, @Param("fecha") Date fecha, @Param("nombre_archivo") String nombre_archivo, @Param("ETag") String ETag, @Param("Location") String Location, @Param("key") String key, @Param("Bucket") String Bucket, @Param("fechaCreacion") LocalDateTime fechaCreacion);
+	@Query(value = "INSERT INTO solicitud_archivo (solicitud_id, usuario_creador, gestion, sistema, mes, fecha, nombre_archivo, eTag, location, key, bucket, fecha_creacion, tipo_archivo, conversacion_id) "
+							+ " VALUES (:solicitud, :usuario_creador, :gestion, :sistema, :mes, :fecha, :nombre_archivo, :ETag, :Location, :key, :Bucket, :fechaCreacion, :tipo_archivo, :conversacion_id)", nativeQuery = true)
+	public int saveSolicitudArchivo(@Param("solicitud") Long solicitud, @Param("usuario_creador") String usuario_creador, @Param("gestion") String gestion, @Param("sistema") String sistema, @Param("mes") String mes, @Param("fecha") Date fecha, @Param("nombre_archivo") String nombre_archivo, @Param("ETag") String ETag, @Param("Location") String Location, @Param("key") String key, @Param("Bucket") String Bucket, @Param("fechaCreacion") LocalDateTime fechaCreacion, @Param("tipo_archivo") String tipo_archivo, @Param("conversacion_id") Long conversacion_id);
 	
-	@Query("SELECT sa FROM SolicitudArchivo sa WHERE sa.solicitud.id = :solicitud_id AND sa.fechaEliminacion is null")
-	public List<SolicitudArchivo> getSolicitudArchivosById(@Param("solicitud_id") Long solicitud_id);
+	@Query("SELECT sa FROM SolicitudArchivo sa WHERE sa.solicitud.id = :solicitud_id AND sa.fechaEliminacion is null AND sa.conversacion.id = :conversacion_id")
+	public List<SolicitudArchivo> getSolicitudArchivosById(@Param("solicitud_id") Long solicitud_id, @Param("conversacion_id") Long conversacion_id);
 	
 	
 	//***************** SOLICITUD CONVERSACION *****************
@@ -154,7 +154,7 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	@Query(value = "INSERT INTO solicitud_conversacion (usuario_creador, solicitud_id, usuario_id_respuesta, texto, estado, tipo, fecha_creacion) "
 			+ " VALUES (:usuario_creador, :solicitud_id, :usuario_id_respuesta, :texto, :estado, :tipo, :fecha_creacion)" , nativeQuery = true)
 	public int saveSolicitudConversacionRespuesta(@Param("usuario_creador") String usuario_creador, @Param("solicitud_id") Long solicitud_id, @Param("usuario_id_respuesta") Long usuario_id_respuesta, @Param("texto") String texto, @Param("estado") String estado, @Param("tipo") String tipo, @Param("fecha_creacion") LocalDateTime fecha_creacion);
-	
+
 	@Modifying
 	@Query(value = "INSERT INTO solicitud_conversacion (usuario_creador, solicitud_id, usuario_id_solicitante, texto, estado, tipo, fecha_creacion) "
 			+ " VALUES (:usuario_creador, :solicitud_id, :usuario_id_solicitante, :texto, :estado, :tipo, :fecha_creacion)" , nativeQuery = true)
@@ -162,5 +162,8 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
 	@Query("SELECT sc FROM SolicitudConversacion sc WHERE sc.solicitud.id = :solicitud_id AND  sc.fechaEliminacion IS NULL ORDER BY sc.fechaCreacion DESC")
 	public List<SolicitudConversacion> getSolicitudConversacionById(@Param("solicitud_id") Long solicitud_id);
+
+	@Query("SELECT MAX(sc.id) AS ultimo FROM SolicitudConversacion sc WHERE sc.solicitud.id = :solicitudId")
+	public Long maxSolicitudConversacionByIdSolicitud(@Param("solicitudId") Long solicitudId);
 	
 }

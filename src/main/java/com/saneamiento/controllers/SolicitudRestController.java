@@ -129,11 +129,11 @@ public class SolicitudRestController {
 		Usuario usuarioSolicitante  =  this.usuarioService.findById(solicitante_id);
 		
 		Long tipo_solicitud_id = Long.parseLong(requestbody.get("tipo_solicitud").toString());
-
+		
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		Long solicitud_id 		= 0L;
 		String tipoSistema 		= "extranjeria";
-		Solicitud newsolicitud 	= generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
+		Solicitud newsolicitud 	= generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id, null);
 		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 
 		Solicitud solicitudGuardada = this.solicitudService.save(newsolicitud);
@@ -287,13 +287,16 @@ public class SolicitudRestController {
 		String estado 				= requestbody.get("estado").toString();
 		Long solicitud_id 			= Long.parseLong(requestbody.get("solicitud_id").toString());
 		
+		String tipo_prioridad 		= requestbody.get("tipo_prioridad").toString();
+		
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		String    tipoSistema  = "extranjeria";
-		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
+		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id, tipo_prioridad);
 		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 
 		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
 		Long      newSolicitudId = savedSolicitud.getId();
+		this.solicitudService.save(generaCodigoSolicitud(savedSolicitud, tipoSistema));
 
 		this.solicitudService.saveTramite(tipo_solicitud_id, newSolicitudId);
 		Tramite tramiteBuscado = this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
@@ -313,7 +316,11 @@ public class SolicitudRestController {
 		    	//System.out.println("key: "+key +" | valor: "+valor);
 		    }
 		});	
-				
+		
+		//**************** PARA EL MENSAJE DE IDA****************
+		String mesaje = requestbody.get("mensaje_adicion").toString();
+		this.solicitudService.saveSolicitudConversacion(solicitante_id.toString(), newSolicitudId , solicitante_id, mesaje, estado, "PREGUNTA", savedSolicitud.getFechaCreacion());
+		    				
 		return savedSolicitud;
 	}
 	
@@ -345,9 +352,11 @@ public class SolicitudRestController {
 		String estado 				= requestBody.get("estado").toString();
 		Long solicitud_id 			= Long.parseLong(requestBody.get("solicitud_id").toString());
 		
+		String tipo_prioridad 		= requestBody.get("tipo_prioridad").toString();
+		
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		String    tipoSistema  = "extranjeria";
-		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
+		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id, tipo_prioridad);
 		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		
 		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
@@ -369,6 +378,10 @@ public class SolicitudRestController {
 		    	//System.out.println("key: "+key +" | valor: "+valor);
 		    }
 		});
+		
+		//**************** PARA EL MENSAJE DE IDA****************
+		String mesaje = requestBody.get("mensaje_adicion").toString();
+		this.solicitudService.saveSolicitudConversacion(solicitante_id.toString(), newSolicitudId , solicitante_id, mesaje, estado, "PREGUNTA", savedSolicitud.getFechaCreacion());
 		
 		return savedSolicitud;
 	}
@@ -400,11 +413,13 @@ public class SolicitudRestController {
 		String estado 				= requestBody.get("estado").toString();
 		Long solicitud_id 			= Long.parseLong(requestBody.get("solicitud_id").toString());
 		
+		String tipo_prioridad 		= requestBody.get("tipo_prioridad").toString();
+						
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		String    tipoSistema  = "extranjeria";
-		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
+		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id, tipo_prioridad);
 		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
-		
+				
 		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
 		Long      newSolicitudId = savedSolicitud.getId();
 		this.solicitudService.save(generaCodigoSolicitud(savedSolicitud, tipoSistema));
@@ -412,6 +427,7 @@ public class SolicitudRestController {
 		this.solicitudService.saveTramite(tipo_solicitud_id, newSolicitudId);
 		Tramite tramiteBuscado 		= this.solicitudService.buscaByTipoSolicitudBySolicitudId(newSolicitudId , tipo_solicitud_id);
 		Long tramite_id 			= tramiteBuscado.getId();
+		
 		
 		
 		//**************** PARA EL TRAMITE DETALLE****************
@@ -437,15 +453,23 @@ public class SolicitudRestController {
     		}   		
     	});
     	
+    	
+    	
+		//**************** PARA EL MENSAJE DE IDA****************
+		String mesaje = requestBody.get("mensaje_adicion").toString();
+		this.solicitudService.saveSolicitudConversacion(solicitante_id.toString(), newSolicitudId , solicitante_id, mesaje, estado, "PREGUNTA", savedSolicitud.getFechaCreacion());
+		           	
 		return savedSolicitud;
+
+		//return null;
+		/*
+		 */
+		
 	}
 	
 	
 	@PostMapping("/saveSolicitudBajaOrpeNaturalizacion")
 	public Solicitud saveSolicitudBajaOrpeNaturalizacion(@RequestBody Map<String, Object> requestBody) {
-		
-		System.out.println(requestBody);
-		
 		
 		String serialExtRegistros 	= requestBody.get("serialExtRegistros").toString();
 		
@@ -469,9 +493,11 @@ public class SolicitudRestController {
 		String estado 				= requestBody.get("estado").toString();
 		Long solicitud_id 			= Long.parseLong(requestBody.get("solicitud_id").toString());
 		
+		String tipo_prioridad 		= requestBody.get("tipo_prioridad").toString();
+		
 		// ******************************** DE AQUI COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		String    tipoSistema  = "extranjeria";
-		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id);
+		Solicitud newsolicitud = generaSolicitud(formBuscado, usuarioSolicitante, ex, tipoSistema, estado, solicitud_id, tipo_prioridad);
 		// ******************************** DE AQUI TERMINA COMIENZA LO BUENO QUE ES LA ASIGNACION SIMPLIFICADO ********************************
 		
 		Solicitud savedSolicitud = this.solicitudService.save(newsolicitud);
@@ -488,7 +514,11 @@ public class SolicitudRestController {
 		
 		this.solicitudService.saveTramiteDetalle(tramite_id, "naturalizado", naturalizacion);
 		this.solicitudService.saveTramiteDetalle(tramite_id, "baja_orpe", baja_orpe);
-			
+				
+		//**************** PARA EL MENSAJE DE IDA****************
+		String mesaje = requestBody.get("mensaje_adicion").toString();
+		this.solicitudService.saveSolicitudConversacion(solicitante_id.toString(), newSolicitudId , solicitante_id, mesaje, estado, "PREGUNTA", savedSolicitud.getFechaCreacion());
+					
 		return savedSolicitud;
 	}
 	
@@ -541,36 +571,58 @@ public class SolicitudRestController {
 	@PostMapping("/saveSolicitudArchivo")
 	public int saveSolicitudArchivo(@RequestBody Map<String, Object> requestBody) {
 		
-		//System.out.println(requestBody);
+		/*
+		System.out.println(requestBody);
+		System.out.println("solicitud_id => " +Long.parseLong(requestBody.get("solicitud").toString()));
+		System.out.println("usuario_ud => " +requestBody.get("usuario_creador").toString());
+		System.out.println("gestion => " +requestBody.get("gestion").toString());
+		System.out.println("sistema => " +requestBody.get("sistema").toString());
+		System.out.println("mes => " +requestBody.get("mes").toString());
+		System.out.println("tipo_archivo => " +requestBody.get("tipo_archivo").toString());
+		// System.out.println("utilDate => "+utilDate);
+		// System.out.println("sqlDate => "+sqlDate);
+		System.out.println("nombre_archivo => "+requestBody.get("nombre_archivo").toString());
+		System.out.println("ETag => "+requestBody.get("ETag").toString());
+		System.out.println("Location => "+requestBody.get("Location").toString());
+		System.out.println("key => "+requestBody.get("key").toString());
+		System.out.println("Bucket => "+requestBody.get("Bucket").toString());
+		// System.out.println("instant => "+instant);
+		// System.out.println("localDateTime => "+localDateTime);
+		// System.out.println("maxConversacion => "+maxConversacion);
+		*/
 		
 		Long solicitud_id 			= Long.parseLong(requestBody.get("solicitud").toString());
 		String usuario_ud  			= requestBody.get("usuario_creador").toString();
 		String gestion  			= requestBody.get("gestion").toString();
 		String sistema  			= requestBody.get("sistema").toString();
 		String mes  				= requestBody.get("mes").toString();
+		String tipo_archivo  		= requestBody.get("tipo_archivo").toString();
 		//String fecha  = requestBody.get("fecha").toString();
 		
 		Date utilDate = new Date(); // Supongamos que la fecha es la fecha actual
 		// Suponiendo que tienes un java.util.Date llamado utilDate
 		java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());		
 
-		String nombre_archivo  = requestBody.get("nombre_archivo").toString();
-		String ETag  = requestBody.get("ETag").toString();
-		String Location  = requestBody.get("Location").toString();
-		String key  = requestBody.get("key").toString();
-		String Bucket  = requestBody.get("Bucket").toString();
+		String nombre_archivo  	= requestBody.get("nombre_archivo").toString();
+		String ETag  			= requestBody.get("ETag").toString();
+		String Location  		= requestBody.get("Location").toString();
+		String key  			= requestBody.get("key").toString();
+		String Bucket  			= requestBody.get("Bucket").toString();
 		
 		Instant instant = new Date().toInstant();
 		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-			
-		//this.solicitudService.saveSolicitudArchivo(solicitudBuscado, "", gestion, sistema, mes, sqlDate, nombre_archivo, ETag, Location, key, Bucket, localDateTime);
-		return this.solicitudService.saveSolicitudArchivo(solicitud_id, usuario_ud, gestion, sistema, mes, sqlDate, nombre_archivo, ETag, Location, key, Bucket, localDateTime);
+		
+		Long maxConversacion = this.solicitudService.maxSolicitudConversacionByIdSolicitud(solicitud_id);
+
+		
+		
+		return this.solicitudService.saveSolicitudArchivo(solicitud_id, usuario_ud, gestion, sistema, mes, sqlDate, nombre_archivo, ETag, Location, key, Bucket, localDateTime, tipo_archivo, maxConversacion);
 		
 	}
 	
-	@GetMapping("/getSolicitudArchivosById/{solicitud_id}")
-	public List<SolicitudArchivo> getSolicitudArchivosById(@PathVariable Long solicitud_id) {
-		return this.solicitudService.getSolicitudArchivosById(solicitud_id);
+	@GetMapping("/getSolicitudArchivosById/{solicitud_id}/{conversacion_id}")
+	public List<SolicitudArchivo> getSolicitudArchivosById(@PathVariable Long solicitud_id, @PathVariable Long conversacion_id) {
+		return this.solicitudService.getSolicitudArchivosById(solicitud_id, conversacion_id);
 	}
 	
 	
@@ -590,16 +642,36 @@ public class SolicitudRestController {
 		String estado		= requestBody.get("estado").toString();
 		String tipo			= requestBody.get("tipo").toString();
 		
+		
 		//AQUI GUARDAMOS LA SOLICITUD
 		Solicitud solicitudBuscadof = this.solicitudService.findById(solicitud_id);
 		solicitudBuscadof.setEstado(estado);
 		this.solicitudService.save(solicitudBuscadof);
 		//END AQUI GUARDAMOS LA SOLICITUD
 		
-		Instant       instant       = new Date().toInstant();
-		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+		//Instant       instant       = new Date().toInstant();
+		//LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
 		
-		return this.solicitudService.saveSolicitudConversacionRespuesta(usuario_id.toString(), solicitud_id, usuario_id, mensaje, estado, tipo, localDateTime);
+		//Instant instant = Instant.now(); // Obtiene el Instant actual
+		//LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+
+		
+		LocalDateTime fechaCreacion = LocalDateTime.now(); // Ejemplo de fecha actual
+		int d = this.solicitudService.saveSolicitudConversacionRespuesta(usuario_id.toString(), solicitud_id, usuario_id, mensaje, estado, tipo, fechaCreacion);
+		
+		System.out.println(d);
+		
+		/*
+		System.out.println("Parámetros: solicitud_id=" + solicitud_id + ", estado=" + estado + ", mensaje=" + mensaje + ", fechaCreacion=" + fechaCreacion);
+		
+		List<Map<String, Object>> h =  this.solicitudService.findBySolicitudIdAndEstadoAndTextoAndFechaCreacion(solicitud_id, estado, mensaje, fechaCreacion);
+		
+		System.out.println(h.size());
+		*/
+		
+
+		return 0;
 	}
 	
 
