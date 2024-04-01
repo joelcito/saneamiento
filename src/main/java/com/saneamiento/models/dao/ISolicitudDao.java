@@ -23,10 +23,10 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 	
 	//**************** SOLICITUD ****************
 	@Query("SELECT so FROM Solicitud so WHERE so.UsuarioAsignado.id =:usuario_asignado_id ")
-	//@Query(value = "SELECT s.id, s.descripcion, s.fecha_respuesta, s.fecha_solicitud, s.asignado_id, s.respuesta_id, s.solicitante_id, s.sistema, s.tabla_id, s.formulario_id, s.estado, s.fecha_creacion, s.fecha_eliminacion, s.fecha_modificacion, s.usuario_creador, s.usuario_eliminador, s.usuario_modificador FROM saneamiento.solicitud s WHERE s.asignado_id =:usuario_asignado_id ", nativeQuery = true)
 	public List<Solicitud> listadoSolicitudesAsignados(@Param("usuario_asignado_id") Long usuario_asignado_id);
 
-	@Query("SELECT so FROM Solicitud so WHERE so.UsuarioSolicitante.id =:usuario_solicitante_id ")
+	// @Query("SELECT so FROM Solicitud so WHERE so.UsuarioSolicitante.id =:usuario_solicitante_id ")
+	@Query("SELECT so FROM Solicitud so WHERE so.UsuarioSolicitante.id =:usuario_solicitante_id AND so.fechaEliminacion is null ")
 	public List<Solicitud> listadoSolicitudes(@Param("usuario_solicitante_id") Long usuario_solicitante_id);
 	
 	@Query(value = "SELECT t.* "
@@ -36,16 +36,6 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 			+ "WHERE e.serialextregistros = :serialextregistros AND t.detalle_tipo_saneo_id = :detalle_tipo_saneo_id", nativeQuery = true)
 	public List<Map<String, Object>> verificaSiTieneTramatiesEnviados(@Param("serialextregistros") String serialextregistros, @Param("detalle_tipo_saneo_id") Long detalle_tipo_saneo_id);
 	
-	
-	/*
-	@Query( value =  "SELECT * "
-			+ "FROM saneamiento.solicitud s "
-			+ "WHERE s.asignado_id IN ( "
-			+ "    SELECT u.id "
-			+ "    FROM saneamiento.usuario u  "
-			+ "    WHERE u.dependencia_id = :dependencia AND u.fecha_eliminacion is NULL "
-			+ "  ) AND s.fecha_eliminacion IS null ORDER BY s.id DESC ", nativeQuery = true)
-	*/
 	@Query(value = "SELECT *  "
 			+ "FROM saneamiento.solicitud s "
 			+ "WHERE s.asignado_id IN ( "
@@ -61,8 +51,10 @@ public interface ISolicitudDao extends CrudRepository<Solicitud, Long> {
 			+ "AND s.fecha_eliminacion IS NULL ORDER BY s.id DESC", nativeQuery = true)
 	public List<Solicitud> listadoCasos(@Param("dependencia") String dependencia);
 	
-	
-	
+	@Modifying
+	@Query(value = "UPDATE solicitud SET fecha_eliminacion = :fecha_eliminacion, usuario_eliminador = :usuario_eliminador WHERE id = :id", nativeQuery = true)
+	public int eliminarSolicitud(@Param("fecha_eliminacion") LocalDateTime fecha_eliminacion, @Param("usuario_eliminador") String usuario_eliminador, @Param("id") Long id);
+
 	//**************** TABLA EXTRANJENRIA ****************	
 	//@Query(value = "SELECT * "
 	@Query(value = "SELECT * , s.id as id_solicitud, s.estado as estado_solucitud "

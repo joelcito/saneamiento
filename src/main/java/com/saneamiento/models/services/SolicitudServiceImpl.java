@@ -68,6 +68,12 @@ public class SolicitudServiceImpl implements ISolicitudService {
 		return this.solicitudDao.listadoCasos(dependencia);
 	}
 	
+	@Override
+	@Transactional
+	public int eliminarSolicitud(LocalDateTime fecha_eliminacion, String usuario_eliminador, Long id) {
+		return this.solicitudDao.eliminarSolicitud(fecha_eliminacion, usuario_eliminador, id);
+	}
+	
 	//*********************** EXTRANJERIA ***********************
 	
 	@Override
@@ -213,6 +219,5 @@ public class SolicitudServiceImpl implements ISolicitudService {
 	public Long maxSolicitudConversacionByIdSolicitud(Long solicitudId) {
 		return this.solicitudDao.maxSolicitudConversacionByIdSolicitud(solicitudId);
 	}
-
 }
 

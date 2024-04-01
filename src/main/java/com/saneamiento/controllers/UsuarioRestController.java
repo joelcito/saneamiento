@@ -115,9 +115,9 @@ public class UsuarioRestController {
 			//System.out.println(valor);
 		});
 		
-		System.out.println("----------------------------------------");
-		System.out.println(listaHijos);
-		System.out.println(listaPadre);
+		// System.out.println("----------------------------------------");
+		// System.out.println(listaHijos);
+		// System.out.println(listaPadre);
 		
 		
 		//String json = usuarioRolBuscado.getMenus(); 
@@ -190,7 +190,10 @@ public class UsuarioRestController {
 	public Usuario upDateUsuario(@RequestBody Map<String, Object> requestBody,@PathVariable Long usuario_id) {
 		Usuario userBuscado = this.usuarioService.findById(usuario_id);
 		
-		userBuscado.setCedula(requestBody.get("complemento").toString());
+		
+		userBuscado.setComplemento(requestBody.get("complemento").toString());
+		
+		/*userBuscado.setCedula(requestBody.get("complemento").toString());
 		userBuscado.setComplemento(requestBody.get("complemento").toString());
 		userBuscado.setNombres(requestBody.get("complemento").toString());
 		userBuscado.setPrimer_apellido(requestBody.get("complemento").toString());
@@ -201,7 +204,7 @@ public class UsuarioRestController {
 		userBuscado.setDepartamento(requestBody.get("complemento").toString());
 		userBuscado.setUsername(requestBody.get("complemento").toString());
 		userBuscado.setPassword(requestBody.get("complemento").toString());
-		
+		*/
 		this.usuarioService.save(userBuscado);
 		
 		System.out.println(requestBody);

@@ -31,6 +31,7 @@ public interface ISolicitudService {
 	
 	public List<Solicitud> listadoCasos(String dependencia);
 	
+	public int eliminarSolicitud(LocalDateTime fecha_eliminacion, String usuario_eliminador, Long id);
 	
 	
 	//***************** PARA LA TABLA DE TRAMITE *****************			

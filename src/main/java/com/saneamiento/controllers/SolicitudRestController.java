@@ -674,6 +674,20 @@ public class SolicitudRestController {
 		return 0;
 	}
 	
+	@PostMapping("/eliminarSolicitud")
+	public int eliminarSolicitud(@RequestBody Map<String, Object> requestBody) {
+		
+		System.out.println(requestBody);
+		
+		Instant instant 			= new Date().toInstant();
+		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();		
+		String usuario_eliminador 	= requestBody.get("usuario_eliminador").toString();
+		Long solicitud_id 			= Long.parseLong(requestBody.get("solicitud_id").toString());
+		
+		return this.solicitudService.eliminarSolicitud(localDateTime, usuario_eliminador, solicitud_id);
+			
+	}
+	
 
 	// ******************** FUNCIONES PRIVADAS ********************
 

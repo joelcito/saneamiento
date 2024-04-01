@@ -58,10 +58,7 @@ public class AuthService {
 	}
 
 	public AuthResponse register(RegisterRequest request) {
-		
-		
-		System.out.println(request);
-		
+			
 		Usuario user = Usuario.builder()
 								.username(request.getUsername())
 								.password(passwordEncoder.encode(request.getPassword())) 
