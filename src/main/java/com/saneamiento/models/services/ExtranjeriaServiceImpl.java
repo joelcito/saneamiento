@@ -187,53 +187,18 @@ public class ExtranjeriaServiceImpl {
     }
     
     
-    /*
-    public ResponseEntity<byte[]> getImagenExtranjero(Map<String, Object> datos) {
-    	
-    	String id =  datos.get("numero_cedula").toString();
-    	
-        byte[] imageData = imageService.getImageDataById(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG); // Ajusta el tipo de contenido según tu necesidad
-
-        return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
-    }
-    */    
-    /*
-    @Transactional
-    public ResponseEntity<byte[]> getImagenExtranjero(Map<String, Object> datos) throws SQLException {
-    	
-    	String id =  datos.get("numero_cedula").toString();
-    	byte[] imageData = jdbcTemplate.queryForObject(
-				"SELECT ValorExtImagenes FROM ExtImagenes WHERE SerialExtRegistros = ? AND CodigoExtTipoImagen = 3",
-		        new Object[]{id},
-		        byte[].class
-		);
-
-		if (imageData != null) {
-		    HttpHeaders headers = new HttpHeaders();
-		    headers.setContentType(MediaType.IMAGE_JPEG);
-		    return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
-		} else {
-		    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		
-	}
-	*/
-    
-        
-    /*
     @Transactional(readOnly = true)
-    public Map<String, Object>  getImagenExtranjero(Map<String, Object> datos) {
+    public Map<String, Object> buscaPorNumdeposito(Map<String, Object> requestBody) {
     	
-    	String cedua = datos.get("numero_cedula").toString();
+    	System.out.println(requestBody);
+   	
+    	StringBuilder sql = new StringBuilder("SELECT COUNT(*) as cantidad FROM ExtRegistros e WHERE 1=1");
+    	//sql.append(" AND e.NumDepositoExtRegistros = '").append(requestBody.get("numeroBoleta")).append("'");
+    	sql.append(" AND e.").append(requestBody.get("nombre_campo")).append(" = '").append(requestBody.get("numeroBoleta")).append("'");
     	
-    	String sql = "SELECT * FROM ExtRegistros er WHERE er.NroCedulaBolExtRegistros = '"+cedua+"' AND CodigoExtTipoImagen = '3'";
-    	 	
+    	System.out.println(sql);
     	
-		return jdbcTemplate.queryForMap(sql);
+    	return jdbcTemplate.queryForMap(sql.toString());
 	}
-	*/
-    
 
 }

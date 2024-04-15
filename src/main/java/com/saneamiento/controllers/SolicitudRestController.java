@@ -677,8 +677,6 @@ public class SolicitudRestController {
 	@PostMapping("/eliminarSolicitud")
 	public int eliminarSolicitud(@RequestBody Map<String, Object> requestBody) {
 		
-		System.out.println(requestBody);
-		
 		Instant instant 			= new Date().toInstant();
 		LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();		
 		String usuario_eliminador 	= requestBody.get("usuario_eliminador").toString();

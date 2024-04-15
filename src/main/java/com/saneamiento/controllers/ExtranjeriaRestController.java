@@ -64,6 +64,12 @@ public class ExtranjeriaRestController {
 		return this.extranjeriaSerice.saneoCorrecionCIESqlServer(requestBody);
 	}
 	
+	@PostMapping("/buscaPorNumdeposito")
+	public Map<String, Object> buscaPorNumdeposito(@RequestBody Map<String, Object> requestBody) {
+		return this.extranjeriaSerice.buscaPorNumdeposito(requestBody);
+	}
+	
+	
 	
 	
 	/*
